@@ -63,12 +63,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ── LIST ── */
 .lead-list{display:flex;flex-direction:column;gap:6px}
-.lead-card{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:13px 14px;cursor:pointer;transition:border-color .15s;position:relative}
-.lead-card:active{background:var(--s3)}
-.lead-card.no-resp{border-left:3px solid var(--red)}
-.lead-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
-.lead-name{font-weight:600;font-size:.92rem}
-.lead-sub{font-size:.7rem;color:var(--muted);margin-top:2px}
+.lead-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.lead-card:active{opacity:.85;transform:scale(.99)}
+.lead-card-accent{height:3px;width:100%}
+.lead-card-body{padding:13px 15px 12px}
+.lead-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.lead-name{font-weight:700;font-size:.95rem;line-height:1.2}
+.lead-loc{font-size:.7rem;color:var(--muted);margin-top:3px}
+.lead-loc span{color:var(--muted2)}
+.lead-card-right{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+.lead-card-mid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.lead-card-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--border)}
+.lead-card-dates{font-size:.68rem;color:var(--muted2);display:flex;flex-direction:column;gap:2px}
 .badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.67rem;font-weight:600;white-space:nowrap}
 .b-gold{background:#C9A22720;color:var(--gold);border:1px solid #C9A22740}
@@ -285,8 +291,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <thead>
           <tr>
             <th>Nombre</th><th>Teléfono</th><th>Email</th>
-            <th>Espectáculos</th><th>Canal</th><th>Estado</th>
-            <th>Presupuesto</th><th>Fechas</th><th>Notas</th>
+            <th>Espectáculos</th><th>Canal</th><th>Presupuesto</th>
+            <th>Estado</th><th>Fechas</th><th>Notas</th>
           </tr>
         </thead>
         <tbody id="tbl-body"></tbody>
@@ -346,6 +352,11 @@ function saveShows(arr){ localStorage.setItem(LSS, JSON.stringify(arr)); }
 // ══════════════════════════════════════════════════════
 // BADGE HELPERS
 // ══════════════════════════════════════════════════════
+const RESP_ACCENT = {
+  'Sin contactar':'#6b7280',
+  'Contactado':'#f59e0b',
+  'Respondió ✓':'#4ade80',
+};
 const RESP_CLS = {'Sin contactar':'b-gray','Contactado':'b-amber','Respondió ✓':'b-green'};
 const PPTO_CLS = {'Sin enviar':'b-gray','Enviado':'b-blue','Aceptado':'b-green','Rechazado':'b-red','Sin respuesta':'b-red'};
 const CANAL_CLS= {'Meta':'b-purple','Email':'b-blue','Web':'b-gold','Otro':'b-gray'};
@@ -489,18 +500,23 @@ function renderTable(f){
       : '<span style="color:var(--muted2)">—</span>';
     const pFechas = (l.fechas||[]);
     const fechasHTML = pFechas.length
-      ? pFechas.map(d=>`<span style="font-size:.72rem;color:var(--muted2);white-space:nowrap">📅 ${fmtDate(d)}</span>`).join('<br>')
+      ? pFechas.map(d=>`<div style="font-size:.72rem;color:var(--muted2);white-space:nowrap;line-height:1.8">📅 ${fmtDate(d)}</div>`).join('')
       : '<span style="color:var(--muted2)">—</span>';
     const cColor = CANAL_COLOR[l.canal]||'#6b7280';
     const eCls = ESTADO_COLOR[l.estado]||'es-enc';
     return `<tr onclick="openDetail('${l.id}')">
-      <td><div class="td-name">${l.nombre||'—'}</div><div class="td-sub">${[l.municipio,l.ccaa].filter(Boolean).join(', ')||'—'}</div></td>
+      <td>
+        <div class="td-name">${l.nombre||'—'}</div>
+        ${l.municipio?`<div class="td-sub">${l.municipio}</div>`:''}
+        ${l.ccaa?`<div class="td-sub" style="color:var(--muted2);font-size:.65rem">${l.ccaa}</div>`:''}
+        ${!l.municipio&&!l.ccaa?'<div class="td-sub">—</div>':''}
+      </td>
       <td style="color:var(--muted2);white-space:nowrap">${l.telefono||'—'}</td>
       <td style="color:var(--gold);font-size:.74rem">${l.email?`<a href="mailto:${l.email}" style="color:var(--gold);text-decoration:none" onclick="event.stopPropagation()">${l.email}</a>`:'—'}</td>
       <td><div class="td-shows">${showsHTML}</div></td>
       <td><span class="canal-dot"><span class="cdot" style="background:${cColor}"></span>${l.canal||'—'}</span></td>
-      <td><span class="td-estado ${eCls}">${l.estado||'—'}</span></td>
       <td>${badge(l.ppto||'Sin enviar',PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}</td>
+      <td><span class="td-estado ${eCls}">${l.estado||'—'}</span></td>
       <td>${fechasHTML}</td>
       <td class="td-nota" title="${(l.notas||'').replace(/"/g,'')}">${l.notas||'—'}</td>
     </tr>`;
@@ -584,25 +600,37 @@ function render(){
     const moreF  = (l.fechas||[]).length>1 ? ` +${l.fechas.length-1}` : '';
     const pShow  = (l.shows||[])[0];
     const moreS  = (l.shows||[]).length>1 ? ` +${l.shows.length-1}` : '';
-    const showsBadge = pShow ? badge(showName(pShow)+(moreS?` <span style="font-size:.63rem">${moreS}</span>`:''),'b-gold') : '';
+    const allShows = (l.shows||[]).map(id=>{ const s=getShows().find(x=>x.id===id); return s?`${s.icon} ${s.name}`:id; });
+    const accentColor = RESP_ACCENT[l.resp||'Sin contactar']||'#6b7280';
+    const allFechas = (l.fechas||[]).map(d=>`📅 ${fmtDate(d)}`);
     return `<div class="lead-card" onclick="openDetail('${l.id}')">
-      <div class="lc-wrap">
-        <div class="lc-top">
-          <div class="lc-main">
-            <div class="lead-name">${l.nombre||'Sin nombre'}</div>
-            <div class="lead-sub">${[l.tipo, l.municipio, l.ccaa?(l.municipio?'('+l.ccaa+')':l.ccaa):''].filter(Boolean).join(' · ')}</div>
-          </div>
-          <div class="lc-right">
-            ${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}
-            ${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : ''}
-            ${badge(l.ppto||'Sin enviar', PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}
-          </div>
+      <div class="lead-card-accent" style="background:${accentColor}"></div>
+      <div class="lead-card-body">
+
+        <!-- Nombre + localidad -->
+        <div style="margin-bottom:10px">
+          <div class="lead-name">${l.nombre||'Sin nombre'}</div>
+          ${(l.municipio||l.ccaa) ? `<div class="lead-loc" style="margin-top:3px">
+            ${l.municipio?`<span>${l.municipio}</span>`:''}
+            ${l.municipio&&l.ccaa?' · ':''}
+            ${l.ccaa?`<span style="color:var(--muted2);font-size:.65rem">${l.ccaa}</span>`:''}
+          </div>` : ''}
         </div>
-        <div class="lc-bottom">
-          <span>${showsBadge||'<span class="lc-fecha-cell">—</span>'}</span>
-          ${badge(l.canal||'—', CANAL_CLS[l.canal]||'b-gray')}
-          <span class="lc-fecha-cell">${pFecha ? '📅 '+fmtDate(pFecha)+(moreF?' '+moreF:'') : '—'}</span>
+
+        <!-- Badges row: shows + respuesta + presupuesto + estado + tipo -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+          ${allShows.map(n=>badge(n,'b-gold')).join('')}
+          ${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}
+          ${badge(l.ppto||'Sin enviar', PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}
+          ${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : ''}
+          ${l.tipo ? badge(l.tipo,'b-gray') : ''}
         </div>
+
+        <!-- Fechas -->
+        ${allFechas.length ? `<div style="padding-top:8px;border-top:1px solid var(--border)">
+          <div class="lead-card-dates">${allFechas.join('<br>')}</div>
+        </div>` : ''}
+
       </div>
     </div>`;
   }).join('');
@@ -663,13 +691,7 @@ function buildFormHTML(l){
     <label>Email</label>
     <input id="f-email" type="email" value="${e(l?.email)}" placeholder="ana@festival.com" maxlength="80">
   </div>
-  <div class="form-group">
-    <label>Tipo de evento / cliente</label>
-    <select id="f-tipo">
-      <option value="">— Selecciona —</option>
-      ${TIPOS.map(t=>`<option ${l?.tipo===t?'selected':''}>${t}</option>`).join('')}
-    </select>
-  </div>
+<div style="display:none">%%TIPO_PLACEHOLDER%%</div>
   <div class="form-group">
     <label>Canal</label>
     <div class="seg">
@@ -713,6 +735,13 @@ function buildFormHTML(l){
       </select>
       <input id="f-mun" type="text" value="${e(l?.municipio)}" placeholder="Municipio" maxlength="60">
     </div>
+  </div>
+  <div class="form-group">
+    <label>Tipo de evento / cliente</label>
+    <select id="f-tipo">
+      <option value="">— Selecciona —</option>
+      ${TIPOS.map(t=>`<option ${l?.tipo===t?'selected':''}>${t}</option>`).join('')}
+    </select>
   </div>
   <div class="form-group">
     <label>Notas</label>
