@@ -290,7 +290,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <table class="tbl">
         <thead>
           <tr>
-            <th>Nombre</th><th>Teléfono</th><th>Email</th>
+            <th>Nombre</th><th>Teléfono</th><th>Respuesta</th>
             <th>Espectáculos</th><th>Canal</th><th>Presupuesto</th>
             <th>Estado</th><th>Fechas</th><th>Notas</th>
           </tr>
@@ -508,11 +508,11 @@ function renderTable(f){
       <td>
         <div class="td-name">${l.nombre||'—'}</div>
         ${l.municipio?`<div class="td-sub">${l.municipio}</div>`:''}
-        ${l.ccaa?`<div class="td-sub" style="color:var(--muted2);font-size:.65rem">${l.ccaa}</div>`:''}
+        ${l.ccaa?`<div style="font-size:.66rem;color:var(--muted2);margin-top:2px">${l.ccaa}</div>`:''}
         ${!l.municipio&&!l.ccaa?'<div class="td-sub">—</div>':''}
       </td>
       <td style="color:var(--muted2);white-space:nowrap">${l.telefono||'—'}</td>
-      <td style="color:var(--gold);font-size:.74rem">${l.email?`<a href="mailto:${l.email}" style="color:var(--gold);text-decoration:none" onclick="event.stopPropagation()">${l.email}</a>`:'—'}</td>
+      <td>${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}</td>
       <td><div class="td-shows">${showsHTML}</div></td>
       <td><span class="canal-dot"><span class="cdot" style="background:${cColor}"></span>${l.canal||'—'}</span></td>
       <td>${badge(l.ppto||'Sin enviar',PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}</td>
@@ -610,17 +610,17 @@ function render(){
         <!-- Nombre + localidad -->
         <div style="margin-bottom:10px">
           <div class="lead-name">${l.nombre||'Sin nombre'}</div>
-          ${(l.municipio||l.ccaa) ? `<div class="lead-loc" style="margin-top:3px">
-            ${l.municipio?`<span>${l.municipio}</span>`:''}
-            ${l.municipio&&l.ccaa?' · ':''}
-            ${l.ccaa?`<span style="color:var(--muted2);font-size:.65rem">${l.ccaa}</span>`:''}
-          </div>` : ''}
+          ${l.municipio?`<div class="lead-loc" style="margin-top:3px">${l.municipio}</div>`:''}
+          ${l.ccaa?`<div style="font-size:.65rem;color:var(--muted2);margin-top:2px">${l.ccaa}</div>`:''}
         </div>
 
-        <!-- Badges row: shows + respuesta + presupuesto + estado + tipo -->
-        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+        <!-- Fila 1: Espectáculos + Respuesta -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
           ${allShows.map(n=>badge(n,'b-gold')).join('')}
           ${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}
+        </div>
+        <!-- Fila 2: Presupuesto + Estado + Tipo -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
           ${badge(l.ppto||'Sin enviar', PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}
           ${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : ''}
           ${l.tipo ? badge(l.tipo,'b-gray') : ''}
@@ -731,7 +731,7 @@ function buildFormHTML(l){
     <div class="loc-row">
       <select id="f-ccaa">
         <option value="">Comunidad Autónoma</option>
-        ${CCAAS.map(c=>`<option ${l?.ccaa===c?'selected':''}>${c}</option>`).join('')}
+        ${CCAAS.map(ca=>`<option value="${ca}" ${l?.ccaa===ca?'selected':''}>${ca}</option>`).join('')}
       </select>
       <input id="f-mun" type="text" value="${e(l?.municipio)}" placeholder="Municipio" maxlength="60">
     </div>
