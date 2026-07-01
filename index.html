@@ -44,14 +44,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stat-l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
 
 /* ── MONTH BREAKDOWN ── */
-.month-breakdown{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:0}
-.month-bc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:9px 10px;cursor:pointer;transition:border-color .15s;user-select:none;text-align:center}
+.month-breakdown{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0}
+.month-bc{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.month-bc:hover{border-color:var(--muted)}
 .month-bc:active{background:var(--s3)}
 .month-bc.active{border-color:var(--gold);background:#C9A22710}
-.month-bc-name{font-size:.72rem;font-weight:600;margin-bottom:2px}
-.month-bc-count{font-size:.65rem;color:var(--muted)}
-@media(max-width:600px){.month-breakdown{grid-template-columns:repeat(4,1fr)}}
-@media(max-width:400px){.month-breakdown{grid-template-columns:repeat(3,1fr)}}
+.month-bc-name{font-size:.68rem;font-weight:600}
+.month-bc-count{font-size:.62rem;color:var(--muted);background:var(--s3);border-radius:10px;padding:1px 5px}
+.month-bc.active .month-bc-count{background:#C9A22725;color:var(--gold)}
 
 /* ── SHOW BREAKDOWN ── */
 .show-breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
@@ -269,12 +269,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </select>
       <select class="fsel" id="fil-ccaa" onchange="render()">
         <option value="">Todas las CCAA</option>
-        <option>Andalucía</option><option>Aragón</option><option>Asturias</option>
-        <option>Baleares</option><option>Canarias</option><option>Cantabria</option>
-        <option>Castilla-La Mancha</option><option>Castilla y León</option><option>Cataluña</option>
-        <option>Comunidad de Madrid</option><option>Comunidad Valenciana</option><option>Extremadura</option>
-        <option>Galicia</option><option>La Rioja</option><option>Navarra</option>
-        <option>País Vasco</option><option>Región de Murcia</option>
+        <option value="Andalucía">Andalucía</option>
+        <option value="Aragón">Aragón</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Baleares">Baleares</option>
+        <option value="Canarias">Canarias</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+        <option value="Castilla y León">Castilla y León</option>
+        <option value="Cataluña">Cataluña</option>
+        <option value="Comunidad de Madrid">Comunidad de Madrid</option>
+        <option value="Comunidad Valenciana">Comunidad Valenciana</option>
+        <option value="Extremadura">Extremadura</option>
+        <option value="Galicia">Galicia</option>
+        <option value="La Rioja">La Rioja</option>
+        <option value="Navarra">Navarra</option>
+        <option value="País Vasco">País Vasco</option>
+        <option value="Región de Murcia">Región de Murcia</option>
       </select>
       <select class="fsel" id="f-estado" onchange="render()">
         <option value="">Todos los estados</option>
@@ -579,18 +590,18 @@ function renderMonthBreakdown(){
   const max = Math.max(...counts, 1);
   const sinFecha = leads.filter(l=>!(l.fechas||[]).length).length;
   const sfActive = activeM === '0';
-  const sfCard = `<div class="month-bc ${sfActive?'active':''}" onclick="toggleMonthFilter(0)" title="Sin fecha" style="grid-column:span 2">
-    <div class="month-bc-name" style="${sinFecha>0?'color:var(--muted2)':''}">📭 Sin fecha</div>
-    <div class="month-bc-count">${sinFecha>0?sinFecha+' lead'+(sinFecha!==1?'s':''):'—'}</div>
+  const sfCard = `<div class="month-bc ${sfActive?'active':''}" onclick="toggleMonthFilter(0)">
+    <div class="month-bc-name">📭 Sin fecha</div>
+    ${sinFecha>0?`<div class="month-bc-count">${sinFecha}</div>`:''}
   </div>`;
 
   const monthCards = MONTHS_SHORT.map((name,i)=>{
     const cnt = counts[i];
     const active = activeM === String(i+1);
     const col = MONTH_COLORS[i];
-    return `<div class="month-bc ${active?'active':''}" onclick="toggleMonthFilter(${i+1})" title="${name}">
+    return `<div class="month-bc ${active?'active':''}" onclick="toggleMonthFilter(${i+1})">
       <div class="month-bc-name" style="${cnt>0?'color:'+col:''}">${name}</div>
-      <div class="month-bc-count">${cnt>0?cnt+' lead'+(cnt!==1?'s':''):'—'}</div>
+      ${cnt>0?`<div class="month-bc-count">${cnt}</div>`:''}
     </div>`;
   }).join('');
   container.innerHTML = sfCard + monthCards;
@@ -643,7 +654,7 @@ function getFiltered(){
     if(sh && !(l.shows||[]).includes(sh)) return false;
     if(rp && (l.resp||'Sin contactar') !== rp) return false;
     if(pp && l.ppto !== pp) return false;
-    if(ca && (l.ccaa||'').trim().toLowerCase() !== ca.trim().toLowerCase()) return false;
+    if(ca && (l.ccaa||'').trim() !== ca.trim()) return false;
     if(mes){
       if(parseInt(mes)===0){
         // Sin fecha
@@ -811,7 +822,7 @@ function buildFormHTML(l){
   <div class="form-group">
     <label>Localidad</label>
     <div class="loc-row">
-      <select id="f-ccaa">
+      <select id="ccaa-sel">
         <option value="">Comunidad Autónoma</option>
         ${CCAAS.map(ca=>`<option value="${ca}" ${l?.ccaa===ca?'selected':''}>${ca}</option>`).join('')}
       </select>
@@ -926,6 +937,8 @@ async function saveLead(){
   const btn = document.getElementById('btn-save');
   if(btn){ btn.disabled=true; btn.textContent='Guardando…'; }
 
+  const _ccaaEl = document.getElementById('ccaa-sel');
+  const ccaaVal = _ccaaEl ? _ccaaEl.value.trim() : '';
   const now = new Date().toISOString();
   const lead = {
     id: editId || 'l'+Date.now(),
@@ -936,7 +949,7 @@ async function saveLead(){
     canal:    getSegVal('canal') || 'Meta',
     resp:     getSegVal('resp')  || 'Sin contactar',
     ppto:     getSegVal('ppto')  || 'Sin enviar',
-    ccaa:     document.getElementById('f-ccaa')?.value || '',
+    ccaa:     ccaaVal,
     municipio:document.getElementById('f-mun')?.value.trim() || '',
     shows:    [...selShows],
     fechas:   [...selDates],
@@ -985,7 +998,8 @@ function openDetail(id){
     <div class="detail-field"><div class="detail-label">Presupuesto</div><div class="detail-val">${badge(l.ppto||'—',PPTO_CLS[l.ppto]||'b-gray')}</div></div>
     <div class="detail-field"><div class="detail-label">Tipo de evento</div><div class="detail-val">${l.tipo||'—'}</div></div>
     <div class="detail-field"><div class="detail-label">Estado</div><div class="detail-val">${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : '—'}</div></div>
-    <div class="detail-field"><div class="detail-label">Localidad</div><div class="detail-val">${[l.municipio,l.ccaa].filter(Boolean).join(', ')||'—'}</div></div>
+    <div class="detail-field"><div class="detail-label">Municipio</div><div class="detail-val">${l.municipio||'—'}</div></div>
+    <div class="detail-field" style="${l.ccaa?'border:1px solid var(--gold)':''}"><div class="detail-label">Comunidad Autónoma</div><div class="detail-val" style="color:var(--gold);font-weight:600">${l.ccaa||'—'}</div></div>
   </div>`;
 
   if((l.shows||[]).length){
