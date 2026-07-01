@@ -267,7 +267,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <option value="Rechazado">Rechazado</option>
         <option value="Sin respuesta">Sin respuesta</option>
       </select>
-      <select class="fsel" id="f-ccaa" onchange="render()">
+      <select class="fsel" id="fil-ccaa" onchange="render()">
         <option value="">Todas las CCAA</option>
         <option>Andalucía</option><option>Aragón</option><option>Asturias</option>
         <option>Baleares</option><option>Canarias</option><option>Cantabria</option>
@@ -635,7 +635,7 @@ function getFiltered(){
   const sh  = document.getElementById('f-show').value;
   const rp  = document.getElementById('f-resp').value;
   const pp  = document.getElementById('f-ppto').value;
-  const ca  = document.getElementById('f-ccaa').value;
+  const ca  = document.getElementById('fil-ccaa').value;
   const est = document.getElementById('f-estado').value;
   const mes = document.getElementById('f-mes').value;
   const q   = document.getElementById('f-q').value.toLowerCase();
