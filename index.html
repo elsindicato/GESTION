@@ -2,2564 +2,1070 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Leads · Ancor Investment</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>SDM · Leads</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #222638;
-    --border: #2e3348;
-    --accent: #4f7cff;
-    --accent2: #ff6b35;
-    --green: #22c55e;
-    --yellow: #f59e0b;
-    --red: #ef4444;
-    --purple: #a855f7;
-    --teal: #14b8a6;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --muted2: #94a3b8;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px 16px;
-  }
-
-  /* ── SETUP BANNER ── */
-  #setup-banner {
-    background: linear-gradient(135deg, #1a2a4a, #1a1d27);
-    border: 1px solid #4f7cff44;
-    border-radius: 14px;
-    padding: 24px 28px;
-    margin-bottom: 28px;
-  }
-  #setup-banner h2 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
-  #setup-banner p { font-size: 0.8rem; color: var(--muted2); line-height: 1.6; margin-bottom: 14px; }
-  .setup-input-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .setup-input-row input {
-    flex: 1; min-width: 260px;
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); padding: 9px 14px; border-radius: 8px;
-    font-size: 0.82rem; font-family: 'Inter', sans-serif; outline: none;
-  }
-  .setup-input-row input:focus { border-color: var(--accent); }
-  #setup-banner.hidden { display: none; }
-
-  /* ── HEADER ── */
-  .header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
-  }
-  .header-left h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
-  .header-left p { font-size: 0.78rem; color: var(--muted2); margin-top: 2px; }
-
-  .sync-status {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 0.72rem; color: var(--muted2);
-    background: var(--surface); border: 1px solid var(--border);
-    padding: 5px 12px; border-radius: 20px;
-  }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
-  .sync-dot.ok { background: var(--green); box-shadow: 0 0 6px #22c55e88; }
-  .sync-dot.loading { background: var(--yellow); animation: pulse 1s infinite; }
-  .sync-dot.error { background: var(--red); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  .btn {
-    background: var(--accent); color: white; border: none;
-    padding: 9px 18px; border-radius: 8px; font-size: 0.82rem;
-    font-weight: 600; cursor: pointer; transition: opacity 0.15s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-outline {
-    background: transparent; border: 1px solid var(--border);
-    color: var(--muted2); padding: 8px 14px; border-radius: 8px;
-    font-size: 0.78rem; cursor: pointer; transition: border-color 0.15s;
-  }
-  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* ── BREAKDOWN ── */
-  .breakdown {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px; margin-bottom: 24px;
-  }
-  .breakdown-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px 18px;
-    display: flex; align-items: center; gap: 14px;
-    cursor: pointer; transition: border-color 0.15s;
-  }
-  .breakdown-card:hover { border-color: var(--accent); }
-  .breakdown-card.selected { border-color: var(--accent); background: #4f7cff0d; }
-  .breakdown-icon { font-size: 1.4rem; width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .breakdown-data { flex: 1; }
-  .breakdown-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
-  .breakdown-stats { display: flex; gap: 12px; }
-  .breakdown-stat { font-size: 0.72rem; color: var(--muted2); }
-  .breakdown-stat strong { color: var(--text); font-weight: 600; }
-  .breakdown-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-top: 8px; }
-  .breakdown-bar { height: 3px; border-radius: 2px; transition: width 0.4s ease; }
-
-  /* ── KPIs ── */
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
-  .kpi::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; border-radius:12px 12px 0 0; }
-  .kpi.accent::before { background: var(--accent); }
-  .kpi.green::before { background: var(--green); }
-  .kpi.orange::before { background: var(--accent2); }
-  .kpi.purple::before { background: var(--purple); }
-  .kpi-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .kpi-value { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; }
-  .kpi-sub { font-size: 0.7rem; color: var(--muted2); margin-top: 2px; }
-  .kpi.accent .kpi-value { color: var(--accent); }
-  .kpi.green .kpi-value { color: var(--green); }
-  .kpi.orange .kpi-value { color: var(--accent2); }
-  .kpi.purple .kpi-value { color: var(--purple); }
-
-  /* ── FILTERS ── */
-  .filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-  .filter-label { font-size: 0.75rem; color: var(--muted); margin-right: 4px; }
-  select, input[type="text"] {
-    background: var(--surface); border: 1px solid var(--border);
-    color: var(--text); padding: 7px 12px; border-radius: 8px;
-    font-size: 0.78rem; font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
-  }
-  select:focus, input[type="text"]:focus { border-color: var(--accent); }
-  input[type="text"] { width: 190px; }
-
-  /* ── TABLE (escritorio) ── */
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
-  thead tr { background: var(--surface2); border-bottom: 1px solid var(--border); }
-  th { padding: 11px 14px; text-align: left; font-weight: 600; color: var(--muted2); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
-  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; cursor: pointer; }
-  tbody tr:last-child { border-bottom: none; }
-  tbody tr:hover { background: var(--surface2); }
-  td { padding: 12px 14px; color: var(--text); white-space: nowrap; }
-  td.name { font-weight: 600; }
-  td.phone { color: var(--muted2); font-size: 0.75rem; }
-
-  /* ── CARDS (móvil) ── */
-  .cards-wrap { display: none; flex-direction: column; gap: 10px; }
-
-  .lead-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
-  .lead-card:active { background: var(--surface2); }
-  .lead-card.has-cita { border-left: 3px solid var(--green); }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 10px;
-    gap: 8px;
-  }
-  .card-name { font-weight: 700; font-size: 0.95rem; }
-  .card-phone { font-size: 0.75rem; color: var(--muted2); margin-top: 2px; }
-  .card-email-line { font-size: 0.73rem; color: var(--muted2); margin-top: 1px; }
-
-  /* Cita destacada */
-  .card-cita {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #22c55e12;
-    border: 1px solid #22c55e33;
-    border-radius: 8px;
-    padding: 8px 12px;
-    margin-bottom: 10px;
-    font-size: 0.78rem;
-  }
-  .card-cita-icon { font-size: 1rem; }
-  .card-cita-info { flex: 1; }
-  .card-cita-label { font-size: 0.65rem; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-  .card-cita-date { font-weight: 700; color: var(--text); font-size: 0.85rem; }
-
-  .card-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .card-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 10px;
-    border-top: 1px solid var(--border);
-    gap: 8px;
-  }
-  .card-agente { display: flex; align-items: center; gap: 6px; font-size: 0.78rem; color: var(--muted2); }
-
-  /* ── FICHA CLIENTE (modal vista) ── */
-  .ficha-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; align-items: flex-end; justify-content: center; }
-  .ficha-overlay.open { display: flex; }
-
-  .ficha {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px 20px 0 0;
-    padding: 0;
-    width: 100%;
-    max-width: 600px;
-    max-height: 92vh;
-    overflow-y: auto;
-    animation: slideUp 0.25s ease;
-  }
-  @keyframes slideUp { from { transform: translateY(40px); opacity:0; } to { transform: translateY(0); opacity:1; } }
-
-  .ficha-handle {
-    width: 40px; height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 12px auto 0;
-  }
-
-  .ficha-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .ficha-nombre { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
-  .ficha-actions { display: flex; gap: 8px; flex-shrink: 0; }
-
-  .ficha-body { padding: 20px 24px; }
-
-  .ficha-cita-banner {
-    background: #22c55e12;
-    border: 1px solid #22c55e44;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .ficha-cita-banner .icon { font-size: 1.4rem; }
-  .ficha-cita-banner .info-label { font-size: 0.68rem; color: var(--green); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
-  .ficha-cita-banner .info-value { font-size: 1rem; font-weight: 700; color: var(--text); }
-
-  .ficha-section { margin-bottom: 20px; }
-  .ficha-section-title {
-    font-size: 0.68rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
-    margin-bottom: 10px;
-  }
-  .ficha-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .ficha-field {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 10px 14px;
-  }
-  .ficha-field.full { grid-column: 1 / -1; }
-  .ficha-field-label { font-size: 0.68rem; color: var(--muted2); margin-bottom: 4px; }
-  .ficha-field-value { font-size: 0.85rem; font-weight: 500; color: var(--text); word-break: break-word; }
-  .ficha-field-value.muted { color: var(--muted); font-style: italic; }
-
-  .ficha-notas {
-    background: var(--surface2);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.83rem;
-    line-height: 1.6;
-    color: var(--text);
-    white-space: pre-wrap;
-  }
-
-  /* ── RESPONSIVE ── */
-  @media (max-width: 700px) {
-    body { padding: 16px 12px; }
-
-    .header { margin-bottom: 16px; }
-    .header-left h1 { font-size: 1.1rem; }
-
-    .breakdown { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .breakdown-card { padding: 12px; gap: 10px; }
-    .breakdown-icon { width: 34px; height: 34px; font-size: 1.1rem; }
-    .breakdown-name { font-size: 0.75rem; }
-    .breakdown-stat { font-size: 0.68rem; }
-
-    .kpis { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .kpi { padding: 12px; }
-    .kpi-value { font-size: 1.4rem; }
-
-    .filters { gap: 6px; }
-    .filters select { font-size: 0.75rem; padding: 6px 8px; }
-    #filter-search { width: 100%; }
-
-    /* Ocultar tabla, mostrar cards */
-    .table-wrap { display: none; }
-    .cards-wrap { display: flex; }
-
-    /* Botones header más compactos */
-    .header > div { gap: 6px; }
-    .btn { padding: 8px 12px; font-size: 0.78rem; }
-    .btn-outline { padding: 7px 10px; font-size: 0.74rem; }
-    .sync-status { font-size: 0.68rem; padding: 4px 10px; }
-  }
-
-  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-  .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-
-  .canal-Idealista { background: #1a2d1a; color: #4ade80; }
-  .canal-Idealista .badge-dot { background: #4ade80; }
-  .canal-Meta { background: #1a1f3a; color: #818cf8; }
-  .canal-Meta .badge-dot { background: #818cf8; }
-  .canal-WhatsApp { background: #0d2318; color: #25d366; }
-  .canal-WhatsApp .badge-dot { background: #25d366; }
-  .canal-Otros { background: #2a2a2a; color: #94a3b8; }
-  .canal-Otros .badge-dot { background: #94a3b8; }
-
-  .estado-Nuevo { background: #1e2a3a; color: #60a5fa; }
-  .estado-Contactado { background: #2a2a1e; color: #fbbf24; }
-  .estado-Visita_agendada { background: #1a2d2a; color: #34d399; }
-  .estado-Visita_realizada { background: #1e3a1e; color: #4ade80; }
-  .estado-Negociación { background: #2a1e2a; color: #c084fc; }
-  .estado-Cerrado { background: #1e2a1e; color: #22c55e; }
-  .estado-Descartado { background: #2a1e1e; color: #f87171; }
-
-  .agente-chip { display: inline-flex; align-items: center; gap: 7px; }
-  .avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 700; flex-shrink: 0; }
-  .avatar-f { background: #4f7cff22; color: var(--accent); border: 1px solid #4f7cff44; }
-  .avatar-g { background: #ff6b3522; color: var(--accent2); border: 1px solid #ff6b3544; }
-
-  .empty { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.85rem; }
-
-  /* ── MODAL ── */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
-  .modal h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 20px; letter-spacing: -0.02em; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.full { grid-column: 1 / -1; }
-  label { font-size: 0.72rem; color: var(--muted2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-group select, .form-group input, .form-group textarea {
-    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
-    padding: 9px 12px; border-radius: 8px; font-size: 0.82rem; font-family: 'Inter', sans-serif;
-    outline: none; transition: border-color 0.15s; width: 100%;
-  }
-  .form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-  .form-group textarea { resize: vertical; min-height: 72px; }
-
-  .product-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .product-option { border: 1px solid var(--border); background: var(--surface2); border-radius: 8px; padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 500; color: var(--muted2); transition: all 0.15s; }
-  .product-option:hover { border-color: var(--accent); }
-  .product-option.selected { border-color: var(--accent); background: #4f7cff18; color: var(--text); }
-
-  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
-
-  /* ── TOAST ── */
-  #toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 0.82rem; color: var(--text); z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s; pointer-events: none; max-width: 300px; }
-  #toast.show { transform: translateY(0); opacity: 1; }
-  #toast.success { border-color: var(--green); }
-  #toast.error { border-color: var(--red); }
-
-  /* ── MANAGE PRODUCTS ── */
-  #products-overlay .modal { max-width: 460px; }
-  .prod-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface2); border-radius: 8px; margin-bottom: 8px; }
-  .prod-row span { flex:1; font-size: 0.85rem; font-weight: 500; }
-  .prod-count { font-size: 0.7rem; color: var(--muted); }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 2px 6px; transition: color 0.15s; }
-  .btn-del:hover { color: var(--red); }
-
-  /* ── NAV TABS ── */
-  .nav-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 28px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 4px;
-    width: fit-content;
-  }
-  .nav-tab {
-    padding: 8px 20px;
-    border-radius: 9px;
-    font-size: 0.82rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    color: var(--muted2);
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .nav-tab:hover { color: var(--text); }
-  .nav-tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-  .nav-tab.active.inv { background: linear-gradient(135deg,#b8975a22,#c9a84c22); color: #c9a84c; }
-
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* ── INVERSORES — KPIs ── */
-  .inv-kpis { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 12px; margin-bottom: 24px; }
-  .inv-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
-  .inv-kpi::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; border-radius:12px 12px 0 0; background: linear-gradient(90deg,#b8975a,#c9a84c); }
-  .inv-kpi-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-  .inv-kpi-value { font-size: 1.8rem; font-weight: 700; color: #c9a84c; letter-spacing: -0.03em; }
-  .inv-kpi-sub { font-size: 0.7rem; color: var(--muted2); margin-top: 2px; }
-
-  /* ── INVERSORES — FILTROS ── */
-  .inv-filters { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-
-  /* ── INVERSORES — CARDS GRID ── */
-  .inv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px,1fr)); gap: 14px; }
-
-  .inv-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    cursor: pointer;
-    transition: border-color 0.15s, transform 0.1s;
-    position: relative;
-    overflow: hidden;
-  }
-  .inv-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-  }
-  .inv-card.perfil-patrimonialista::before { background: #c9a84c; }
-  .inv-card.perfil-inversor::before       { background: #4f7cff; }
-  .inv-card.perfil-uso-propio::before     { background: #22c55e; }
-  .inv-card.perfil-traspaso::before       { background: #ff6b35; }
-  .inv-card.perfil-family::before         { background: #a855f7; }
-  .inv-card.perfil-oportunista::before    { background: #14b8a6; }
-  .inv-card:hover { border-color: #c9a84c55; transform: translateY(-1px); }
-
-  .inv-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
-  .inv-card-name { font-weight: 700; font-size: 0.95rem; }
-  .inv-card-contact { font-size: 0.73rem; color: var(--muted2); margin-top: 2px; }
-
-  .inv-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-
-  .badge-perfil { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
-  .bp-patrimonialista { background:#c9a84c22; color:#c9a84c; border:1px solid #c9a84c44; }
-  .bp-inversor        { background:#4f7cff22; color:#818cf8; border:1px solid #4f7cff44; }
-  .bp-uso-propio      { background:#22c55e22; color:#22c55e; border:1px solid #22c55e44; }
-  .bp-traspaso        { background:#ff6b3522; color:#ff6b35; border:1px solid #ff6b3544; }
-  .bp-family          { background:#a855f722; color:#a855f7; border:1px solid #a855f744; }
-  .bp-oportunista     { background:#14b8a622; color:#14b8a6; border:1px solid #14b8a644; }
-
-  .badge-capital { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; background: var(--surface2); color: var(--muted2); border: 1px solid var(--border); }
-
-  .badge-prioridad { padding: 3px 10px; border-radius: 20px; font-size: 0.68rem; font-weight: 700; }
-  .bp-alta   { background:#ef444422; color:#ef4444; border:1px solid #ef444433; }
-  .bp-media  { background:#f59e0b22; color:#f59e0b; border:1px solid #f59e0b33; }
-  .bp-baja   { background:#22c55e22; color:#22c55e; border:1px solid #22c55e33; }
-
-  .inv-card-intereses { font-size: 0.75rem; color: var(--muted2); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-  .inv-card-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.72rem; color: var(--muted); }
-
-  /* ── INVERSORES — FICHA ── */
-  .inv-ficha-section { margin-bottom: 20px; }
-  .inv-ficha-title { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 10px; }
-  .inv-ficha-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .inv-ficha-field { background: var(--surface2); border-radius: 10px; padding: 10px 14px; }
-  .inv-ficha-field.full { grid-column: 1/-1; }
-  .inv-ficha-field-label { font-size: 0.68rem; color: var(--muted2); margin-bottom: 4px; }
-  .inv-ficha-field-value { font-size: 0.85rem; font-weight: 500; color: var(--text); word-break: break-word; white-space: pre-wrap; }
-  .inv-ficha-field-value.muted { color: var(--muted); font-style: italic; }
-
-  .inv-empty { text-align: center; padding: 60px 24px; color: var(--muted); }
-  .inv-empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .inv-empty-text { font-size: 0.85rem; }
-
-  /* ── MULTI-CHECK GRID (tipos activo / zonas) ── */
-  .multi-check-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 6px;
-  }
-  .mcheck {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: var(--surface2);
-    cursor: pointer;
-    font-size: 0.76rem;
-    color: var(--muted2);
-    transition: all 0.15s;
-    user-select: none;
-  }
-  .mcheck:hover { border-color: #c9a84c66; color: var(--text); }
-  .mcheck.checked { background: #c9a84c18; border-color: #c9a84c66; color: #c9a84c; font-weight: 600; }
-
-  /* ── MATCHING ── */
-  .match-hero {
-    background: linear-gradient(135deg, #1a2340, #1e1a2e);
-    border: 1px solid #c9a84c33;
-    border-radius: 14px;
-    padding: 24px 28px;
-    margin-bottom: 24px;
-    text-align: center;
-  }
-  .match-hero h2 { font-size: 1.1rem; font-weight: 700; color: #c9a84c; margin-bottom: 6px; }
-  .match-hero p  { font-size: 0.8rem; color: var(--muted2); margin-bottom: 18px; }
-
-  .match-selectors {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  .match-selector {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-  }
-  .match-selector-label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
-  .match-selector select { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-family: 'Inter', sans-serif; outline: none; }
-  .match-or { text-align: center; color: var(--muted); font-size: 0.75rem; font-weight: 600; }
-
-  .match-chips-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-bottom: 20px;
-  }
-  .match-chip {
-    padding: 5px 14px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    font-size: 0.75rem;
-    color: var(--muted2);
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .match-chip:hover { border-color: #c9a84c66; }
-  .match-chip.active { background: #c9a84c18; border-color: #c9a84c; color: #c9a84c; font-weight: 600; }
-
-  .match-results-title {
-    font-size: 0.72rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .match-count {
-    background: #c9a84c22;
-    color: #c9a84c;
-    border: 1px solid #c9a84c44;
-    padding: 1px 10px;
-    border-radius: 20px;
-    font-size: 0.72rem;
-    font-weight: 700;
-  }
-
-  .match-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 12px; }
-
-  .match-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-    border-left: 3px solid #c9a84c;
-  }
-  .match-card:hover { border-color: #c9a84c; }
-  .match-card-name { font-weight: 700; font-size: 0.88rem; margin-bottom: 4px; }
-  .match-card-sub  { font-size: 0.73rem; color: var(--muted2); margin-bottom: 10px; }
-  .match-card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
-  .match-tag { padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 600; background: #c9a84c18; color: #c9a84c; border: 1px solid #c9a84c33; }
-  .match-tag.zona { background: #4f7cff18; color: #818cf8; border-color: #4f7cff33; }
-  .match-card-bottom { font-size: 0.72rem; color: var(--muted); display: flex; justify-content: space-between; }
-
-  .match-empty { text-align: center; padding: 48px 24px; color: var(--muted); font-size: 0.85rem; grid-column: 1/-1; }
-
-  @media (max-width: 700px) {
-    .match-selectors { grid-template-columns: 1fr; }
-    .match-or { display: none; }
-    .match-grid { grid-template-columns: 1fr; }
-    .nav-tabs { width: 100%; }
-    .nav-tab { flex: 1; text-align: center; padding: 8px 4px; font-size: 0.7rem; }
-    .inv-grid { grid-template-columns: 1fr; }
-    .inv-ficha-grid { grid-template-columns: 1fr; }
-    .inv-ficha-field.full { grid-column: 1; }
-  }
+:root{
+  --bg:#080f07;--s1:#101808;--s2:#172010;--s3:#1e2a15;
+  --border:#28381e;--accent:#2a6b3a;--gold:#C9A227;--gold2:#e8be50;
+  --text:#ddeedd;--muted:#7a9a6a;--muted2:#4a6040;
+  --green:#4ade80;--red:#f87171;--blue:#60a5fa;--amber:#fbbf24;--purple:#c084fc;
+  --r:10px;--r2:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.topbar{background:var(--s1);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:10}
+.topbar-title{font-size:1rem;font-weight:700;flex:1}
+.topbar-title span{color:var(--gold)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);transition:background .3s}
+.sync-dot.ok{background:var(--green);box-shadow:0 0 8px #4ade8060}
+.sync-dot.spin{background:var(--amber);animation:blink 1s infinite}
+.sync-dot.err{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+.content{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat.s-gold::after{background:var(--gold)}
+.stat.s-green::after{background:var(--green)}
+.stat.s-red::after{background:var(--red)}
+.stat.s-purple::after{background:var(--purple)}
+.stat-n{font-size:1.5rem;font-weight:700;line-height:1}
+.stat.s-gold .stat-n{color:var(--gold)}
+.stat.s-green .stat-n{color:var(--green)}
+.stat.s-red .stat-n{color:var(--red)}
+.stat.s-purple .stat-n{color:var(--purple)}
+.stat-l{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}
+
+/* ── MONTH BREAKDOWN ── */
+.month-breakdown{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0}
+.month-bc{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all .15s;user-select:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.month-bc:hover{border-color:var(--muted)}
+.month-bc:active{background:var(--s3)}
+.month-bc.active{border-color:var(--gold);background:#C9A22710}
+.month-bc-name{font-size:.68rem;font-weight:600}
+.month-bc-count{font-size:.62rem;color:var(--muted);background:var(--s3);border-radius:10px;padding:1px 5px}
+.month-bc.active .month-bc-count{background:#C9A22725;color:var(--gold)}
+
+/* ── SHOW BREAKDOWN ── */
+.show-breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.show-bc{background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:11px 13px;cursor:pointer;transition:border-color .15s;user-select:none}
+.show-bc:active{background:var(--s3)}
+.show-bc.active{border-color:var(--gold);background:#C9A22710}
+.show-bc-name{font-size:.78rem;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.show-bc-count{font-size:.68rem;color:var(--muted);margin-bottom:7px}
+.show-bar-wrap{height:3px;background:var(--border);border-radius:2px}
+.show-bar{height:3px;border-radius:2px;transition:width .4s}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fsel{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:7px 10px;border-radius:8px;font-size:.75rem;font-family:inherit;cursor:pointer;outline:none;flex-shrink:0}
+.fsel:focus{border-color:var(--accent)}
+.fsearch{background:var(--s2);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:8px;font-size:.75rem;font-family:inherit;outline:none;flex:1;min-width:120px}
+.fsearch::placeholder{color:var(--muted2)}
+.fsearch:focus{border-color:var(--accent)}
+
+/* ── LIST ── */
+.lead-list{display:flex;flex-direction:column;gap:6px}
+.lead-card{background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:0;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.lead-card:active{opacity:.85;transform:scale(.99)}
+.lead-card-accent{height:3px;width:100%}
+.lead-card-body{padding:13px 15px 12px}
+.lead-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}
+.lead-name{font-weight:700;font-size:.95rem;line-height:1.2}
+.lead-loc{font-size:.7rem;color:var(--muted);margin-top:3px}
+.lead-loc span{color:var(--muted2)}
+.lead-card-right{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+.lead-card-mid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.lead-card-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--border)}
+.lead-card-dates{font-size:.68rem;color:var(--muted2);display:flex;flex-direction:column;gap:2px}
+.badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.67rem;font-weight:600;white-space:nowrap}
+.b-gold{background:#C9A22720;color:var(--gold);border:1px solid #C9A22740}
+.b-green{background:#4ade8015;color:var(--green);border:1px solid #4ade8030}
+.b-red{background:#f8717115;color:var(--red);border:1px solid #f8717130}
+.b-blue{background:#60a5fa15;color:var(--blue);border:1px solid #60a5fa30}
+.b-amber{background:#fbbf2415;color:var(--amber);border:1px solid #fbbf2430}
+.b-purple{background:#c084fc15;color:var(--purple);border:1px solid #c084fc30}
+.b-gray{background:#ffffff10;color:var(--muted);border:1px solid #ffffff15}
+.b-teal{background:#14b8a615;color:#2dd4bf;border:1px solid #14b8a630}
+.b-orange{background:#f9731615;color:#fb923c;border:1px solid #f9731630}
+.lead-dates{font-size:.68rem;color:var(--muted);margin-top:6px}
+.empty{text-align:center;padding:48px 24px;color:var(--muted);font-size:.85rem}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:24px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--gold);color:#1a1000;border:none;font-size:1.5rem;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px #C9A22740;z-index:50;transition:transform .15s}
+.fab:active{transform:scale(.93)}
+
+/* ── PANEL (form + detail) ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.panel{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-radius:20px 20px 0 0;max-height:94vh;display:flex;flex-direction:column;z-index:101;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.panel.open{transform:translateY(0)}
+.panel-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.panel-head{padding:14px 18px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-title{font-size:1rem;font-weight:700;flex:1}
+.panel-body{overflow-y:auto;padding:16px 18px 32px;flex:1}
+
+/* ── FORM ── */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:10px 13px;border-radius:var(--r);font-size:.85rem;font-family:inherit;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent)}
+.form-group textarea{resize:vertical;min-height:80px}
+.seg{display:flex;gap:5px;flex-wrap:wrap}
+.seg-btn{background:var(--s3);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;font-size:.78rem;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
+.seg-btn.sel{border-color:var(--gold);background:#C9A22720;color:var(--gold)}
+.seg-btn.sel.resp-ok{border-color:var(--green);background:#4ade8015;color:var(--green)}
+.seg-btn.sel.resp-no{border-color:var(--red);background:#f8717115;color:var(--red)}
+.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:6px}
+.show-opt{background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;cursor:pointer;display:flex;align-items:center;gap:7px;font-size:.78rem;transition:all .15s;user-select:none}
+.show-opt:active{background:var(--s2)}
+.show-opt.sel{border-color:var(--gold);background:#C9A22714;color:var(--text)}
+.show-opt .chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--muted2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem}
+.show-opt.sel .chk{background:var(--gold);border-color:var(--gold);color:#1a1000}
+.date-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.date-tag{display:inline-flex;align-items:center;gap:6px;background:var(--s3);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.76rem}
+.date-rm{cursor:pointer;color:var(--muted);padding:0 2px}
+.date-rm:hover{color:var(--red)}
+.date-row{display:flex;gap:6px}
+.date-row input[type="date"]{flex:1;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:.8rem;font-family:inherit;outline:none}
+.date-row input:focus{border-color:var(--accent)}
+.loc-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-actions{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* ── BUTTONS ── */
+.btn{border:none;padding:10px 20px;border-radius:var(--r);font-size:.83rem;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btn:active{opacity:.8}
+.btn-gold{background:var(--gold);color:#1a1000}
+.btn-ghost{background:var(--s3);border:1px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:inherit}
+.btn-del{background:#f8717115;border:1px solid var(--red);color:var(--red);padding:9px 16px;border-radius:var(--r);font-size:.8rem;cursor:pointer;font-family:inherit}
+
+/* ── SETUP SCREEN ── */
+.setup{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px}
+.setup-box{background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);padding:28px;max-width:440px;width:100%}
+.setup-box h1{font-size:1.1rem;color:var(--gold);margin-bottom:6px}
+.setup-box p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:18px}
+.setup-box input{width:100%;background:var(--s3);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:var(--r);font-size:.83rem;font-family:inherit;outline:none;margin-bottom:10px}
+.setup-box input:focus{border-color:var(--gold)}
+.setup-note{font-size:.7rem;color:var(--muted2);margin-top:10px;line-height:1.6}
+
+/* ── SHOWS MANAGER ── */
+.shows-manage{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.shows-manage button{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:6px;font-size:.7rem;cursor:pointer;font-family:inherit}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s3);border:1px solid var(--border);border-radius:10px;padding:10px 18px;font-size:.8rem;color:var(--text);z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green)}
+#toast.err{border-color:var(--red)}
+
+/* ── DETAIL VIEW ── */
+.detail-section{margin-bottom:16px}
+.detail-label{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px}
+.detail-val{font-size:.88rem;line-height:1.5}
+.detail-val a{color:var(--gold);text-decoration:none}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-field{background:var(--s2);border-radius:8px;padding:10px 13px}
+.detail-notes{background:var(--s2);border-radius:8px;padding:12px 14px;font-size:.83rem;line-height:1.7;white-space:pre-wrap}
+.no-resp-banner{background:#f8717112;border:1px solid #f8717133;border-radius:8px;padding:11px 14px;display:flex;gap:10px;align-items:center;margin-bottom:14px;font-size:.82rem;color:var(--red)}
+
+/* ── TABLE (desktop) ── */
+.tbl-wrap{display:none;overflow-x:auto;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);margin-top:0}
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem;min-width:860px}
+.tbl thead tr{border-bottom:1px solid var(--border)}
+.tbl th{padding:9px 14px;text-align:left;font-size:.62rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;white-space:nowrap;background:var(--s1)}
+.tbl tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.tbl tbody tr:last-child{border-bottom:none}
+.tbl tbody tr:hover{background:var(--s3)}
+.tbl td{padding:11px 14px;vertical-align:middle;color:var(--text)}
+.td-name{font-weight:600}
+.td-sub{font-size:.68rem;color:var(--muted);margin-top:1px}
+.td-shows{display:flex;flex-direction:column;gap:3px}
+.td-nota{font-size:.72rem;color:var(--muted);max-width:140px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.td-estado{font-size:.74rem;font-weight:700;white-space:nowrap}
+.es-conv{color:var(--blue)}.es-esp{color:var(--amber)}.es-vol{color:#2dd4bf}
+.es-nor{color:var(--red)}.es-enc{color:var(--muted)}.es-int{color:var(--muted)}
+.canal-dot{display:inline-flex;align-items:center;gap:5px;font-size:.74rem}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── CARDS (mobile) ── */
+.lc-wrap{display:flex;flex-direction:column;gap:4px}
+.lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.lc-main{flex:1;min-width:0}
+.lc-right{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+.lc-bottom{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+
+@media(min-width:700px){
+  .stats{grid-template-columns:repeat(4,1fr)}
+  .panel{left:auto;width:460px;top:0;bottom:0;border-radius:0;max-height:100vh}
+  .panel.open{transform:translateX(0)}
+  .panel{transform:translateX(100%)}
+  .fab{bottom:28px;right:28px;width:56px;height:56px;font-size:1.6rem}
+  .loc-row{grid-template-columns:1fr 1fr}
+  .tbl-wrap{display:block}
+  .lead-list{display:none}
+  .list-header{display:none}
+}
+@media(max-width:480px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat-n{font-size:1.3rem}
+}
 </style>
 </head>
 <body>
 
-<!-- SETUP BANNER -->
-<div id="setup-banner">
-  <h2>🔗 Conectar con Google Sheets</h2>
-  <p>Pega aquí la URL de tu Google Apps Script (Web App). Una vez guardada, los datos se sincronizan en tiempo real entre Fernando y Greta.<br>
-  <strong style="color:var(--accent)">¿Aún no tienes la URL?</strong> Sigue las instrucciones del documento adjunto.</p>
-  <div class="setup-input-row">
-    <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/XXXX/exec">
-    <button class="btn" onclick="saveScriptUrl()">Guardar y conectar</button>
+<div id="setup" class="setup" style="display:none">
+  <div class="setup-box">
+    <h1>🎭 SDM Leads</h1>
+    <p>Pega la URL de tu Google Apps Script para sincronizar los leads en todos tus dispositivos.</p>
+    <input type="url" id="su-input" placeholder="https://script.google.com/macros/s/…/exec">
+    <button class="btn btn-gold" style="width:100%" onclick="conectar()">Conectar</button>
+    <p class="setup-note">¿Aún no tienes la URL? Crea el script en Google Sheets → Extensiones → Apps Script → pega el código → Desplegar → Aplicación web.</p>
+    <button class="btn-ghost" style="width:100%;margin-top:8px" onclick="sinSync()">Usar sin sincronización (solo este dispositivo)</button>
   </div>
 </div>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-left">
-    <h1>🏛 Ancor Investment</h1>
-    <p>Fernando & Greta · CRM Inmobiliario</p>
+<div class="app" id="app" style="display:none">
+  <div class="topbar">
+    <div class="topbar-title">🎭 <span>El Sindicato</span> · Leads</div>
+    <div class="sync-dot" id="sdot" title="Estado sync"></div>
+    <button class="btn-ghost" style="font-size:.7rem;padding:5px 10px" onclick="sync()">↻</button>
+    <button class="btn-ghost" style="font-size:.7rem;padding:5px 10px" onclick="exportCSV()">⬇ CSV</button>
   </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-    <div class="sync-status">
-      <div class="sync-dot" id="sync-dot"></div>
-      <span id="sync-text">Sin conectar</span>
+
+  <div class="content" id="main-content">
+    <div class="stats">
+      <div class="stat s-gold"><div class="stat-n" id="k-total">0</div><div class="stat-l">Total leads</div></div>
+      <div class="stat s-green"><div class="stat-n" id="k-acep">0</div><div class="stat-l">Aceptados</div></div>
+      <div class="stat s-red"><div class="stat-n" id="k-sinresp">0</div><div class="stat-l">Sin respuesta</div></div>
+      <div class="stat s-purple"><div class="stat-n" id="k-pte">0</div><div class="stat-l">Pte. respuesta</div></div>
     </div>
-    <button class="btn-outline" onclick="loadLeads()">↻ Actualizar</button>
-  </div>
-</div>
 
-<!-- NAV TABS -->
-<div class="nav-tabs">
-  <button class="nav-tab active" id="tab-leads" onclick="switchTab('leads')">📋 Leads</button>
-  <button class="nav-tab inv" id="tab-inversores" onclick="switchTab('inversores')">💼 Inversores</button>
-  <button class="nav-tab inv" id="tab-matching" onclick="switchTab('matching')">🎯 Matching</button>
-</div>
+    <div class="month-breakdown" id="month-breakdown"></div>
+    <div class="show-breakdown" id="show-breakdown"></div>
 
-<!-- ══════════════════════════════════════ -->
-<!-- PAGE: LEADS                           -->
-<!-- ══════════════════════════════════════ -->
-<div class="page active" id="page-leads">
-
-<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px">
-  <button class="btn-outline" onclick="openManageProducts()">⚙ Activos</button>
-  <button class="btn" onclick="openModal()">+ Nuevo lead</button>
-</div>
-
-<!-- BREAKDOWN -->
-<div class="breakdown" id="breakdown-cards"></div>
-
-<!-- KPIs -->
-<div class="kpis">
-  <div class="kpi accent">
-    <div class="kpi-label">Leads visibles</div>
-    <div class="kpi-value" id="kpi-total">—</div>
-    <div class="kpi-sub" id="kpi-total-sub">total en pipeline</div>
-  </div>
-  <div class="kpi green">
-    <div class="kpi-label">Visitas agendadas</div>
-    <div class="kpi-value" id="kpi-visitas">—</div>
-    <div class="kpi-sub" id="kpi-visitas-sub">estado "Visita agendada"</div>
-  </div>
-  <div class="kpi orange">
-    <div class="kpi-label">Visitas realizadas</div>
-    <div class="kpi-value" id="kpi-realizadas">—</div>
-    <div class="kpi-sub" id="kpi-realizadas-sub">Realizada / Negociación / Cerrado</div>
-  </div>
-  <div class="kpi purple">
-    <div class="kpi-label">% Conversión</div>
-    <div class="kpi-value" id="kpi-conv">—</div>
-    <div class="kpi-sub" id="kpi-conv-sub">leads con visita / total</div>
-  </div>
-</div>
-
-<!-- FILTERS -->
-<div class="filters">
-  <span class="filter-label">Filtrar:</span>
-  <select id="filter-producto" onchange="renderAll()">
-    <option value="">Todos los activos</option>
-  </select>
-  <select id="filter-agente" onchange="renderAll()">
-    <option value="">Ambos agentes</option>
-    <option value="Fernando">Fernando</option>
-    <option value="Greta">Greta</option>
-  </select>
-  <select id="filter-canal" onchange="renderAll()">
-    <option value="">Todos los canales</option>
-    <option value="Idealista">Idealista</option>
-    <option value="Meta">Meta</option>
-    <option value="WhatsApp">WhatsApp</option>
-    <option value="Otros">Otros</option>
-  </select>
-  <select id="filter-estado" onchange="renderAll()">
-    <option value="">Todos los estados</option>
-    <option value="No contactado">No contactado</option>
-    <option value="Contactado">Contactado</option>
-    <option value="Visita agendada">Visita agendada</option>
-    <option value="Visita realizada">Visita realizada</option>
-    <option value="Negociación">Negociación</option>
-    <option value="Cerrado">Cerrado</option>
-    <option value="Descartado">Descartado</option>
-  </select>
-  <input type="text" id="filter-search" placeholder="Buscar nombre..." oninput="renderAll()">
-</div>
-
-<!-- TABLE (escritorio) -->
-<div class="table-wrap">
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Teléfono</th>
-        <th>Email</th>
-        <th>Activo</th>
-        <th>Canal</th>
-        <th>Agente</th>
-        <th>Estado</th>
-        <th>Fecha visita</th>
-        <th>Notas</th>
-      </tr>
-    </thead>
-    <tbody id="leads-tbody">
-      <tr><td colspan="9" class="empty">Conecta con Google Sheets para ver los leads.</td></tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- CARDS (móvil) -->
-<div class="cards-wrap" id="leads-cards">
-  <div class="empty" style="text-align:center;padding:48px 24px;color:var(--muted)">Conecta con Google Sheets para ver los leads.</div>
-</div>
-
-</div><!-- /page-leads -->
-
-<!-- ══════════════════════════════════════ -->
-<!-- PAGE: INVERSORES                      -->
-<!-- ══════════════════════════════════════ -->
-<div class="page" id="page-inversores">
-
-<!-- KPIs inversores -->
-<div class="inv-kpis">
-  <div class="inv-kpi">
-    <div class="inv-kpi-label">Total inversores</div>
-    <div class="inv-kpi-value" id="inv-kpi-total">0</div>
-    <div class="inv-kpi-sub">perfiles cualificados</div>
-  </div>
-  <div class="inv-kpi">
-    <div class="inv-kpi-label">Prioridad alta</div>
-    <div class="inv-kpi-value" id="inv-kpi-alta">0</div>
-    <div class="inv-kpi-sub">acción inmediata</div>
-  </div>
-  <div class="inv-kpi">
-    <div class="inv-kpi-label">Capital +1M</div>
-    <div class="inv-kpi-value" id="inv-kpi-capital">0</div>
-    <div class="inv-kpi-sub">gran capital</div>
-  </div>
-  <div class="inv-kpi">
-    <div class="inv-kpi-label">En negociación</div>
-    <div class="inv-kpi-value" id="inv-kpi-negociacion">0</div>
-    <div class="inv-kpi-sub">proceso activo</div>
-  </div>
-</div>
-
-<!-- Filtros inversores -->
-<div class="inv-filters">
-  <span class="filter-label">Filtrar:</span>
-  <select id="inv-filter-perfil" onchange="renderInversores()">
-    <option value="">Todos los perfiles</option>
-    <option value="Patrimonialista">Patrimonialista</option>
-    <option value="Inversor activo">Inversor activo</option>
-    <option value="Uso propio">Uso propio</option>
-    <option value="Traspaso / negocio">Traspaso / negocio</option>
-    <option value="Family office">Family office</option>
-    <option value="Oportunista">Oportunista</option>
-  </select>
-  <select id="inv-filter-capital" onchange="renderInversores()">
-    <option value="">Todo el capital</option>
-    <option value="Hasta 300k">Hasta 300k</option>
-    <option value="300k – 1M">300k – 1M</option>
-    <option value="+1M">+1M</option>
-    <option value="+5M">+5M</option>
-  </select>
-  <select id="inv-filter-prioridad" onchange="renderInversores()">
-    <option value="">Toda prioridad</option>
-    <option value="Alta">Alta</option>
-    <option value="Media">Media</option>
-    <option value="Baja">Baja</option>
-  </select>
-  <select id="inv-filter-estado" onchange="renderInversores()">
-    <option value="">Todos los estados</option>
-    <option value="Nuevo contacto">Nuevo contacto</option>
-    <option value="Cualificado">Cualificado</option>
-    <option value="Propuesta enviada">Propuesta enviada</option>
-    <option value="En negociación">En negociación</option>
-    <option value="Cerrado">Cerrado</option>
-    <option value="Descartado">Descartado</option>
-  </select>
-  <input type="text" id="inv-filter-search" placeholder="Buscar inversor..." oninput="renderInversores()" style="width:180px">
-  <button class="btn" onclick="openInvModal()" style="margin-left:auto">+ Nuevo inversor</button>
-</div>
-
-<!-- Grid de cards -->
-<div class="inv-grid" id="inv-grid"></div>
-
-</div><!-- /page-inversores -->
-
-<!-- ══════════════════════════════════════ -->
-<!-- PAGE: MATCHING                        -->
-<!-- ══════════════════════════════════════ -->
-<div class="page" id="page-matching">
-
-  <div class="match-hero">
-    <h2>🎯 Motor de Matching</h2>
-    <p>Selecciona un activo para ver qué inversores encajan — o selecciona un inversor para ver qué activos le interesan.</p>
-  </div>
-
-  <!-- Filtros de tipo de activo y zona -->
-  <div style="margin-bottom:16px">
-    <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;font-weight:600">Filtrar por tipo de activo</div>
-    <div class="match-chips-filter" id="match-tipo-chips"></div>
-  </div>
-  <div style="margin-bottom:24px">
-    <div style="font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;font-weight:600">Filtrar por zona</div>
-    <div class="match-chips-filter" id="match-zona-chips"></div>
-  </div>
-
-  <!-- Búsqueda bidireccional -->
-  <div class="match-selectors">
-    <div class="match-selector">
-      <div class="match-selector-label">🏢 Buscar inversores para un activo</div>
-      <select id="match-activo-sel" onchange="matchDesdeActivo()">
-        <option value="">— Selecciona un activo —</option>
+    <div class="filters">
+      <select class="fsel" id="f-show" onchange="render()"><option value="">Todos los shows</option></select>
+      <select class="fsel" id="f-resp" onchange="render()">
+        <option value="">Todas respuestas</option>
+        <option value="Sin contactar">Sin contactar</option>
+        <option value="Contactado">Contactado</option>
+        <option value="Respondió ✓">Respondió ✓</option>
       </select>
-    </div>
-    <div class="match-or">O</div>
-    <div class="match-selector">
-      <div class="match-selector-label">👤 Ver activos para un inversor</div>
-      <select id="match-inv-sel" onchange="matchDesdeInversor()">
-        <option value="">— Selecciona un inversor —</option>
+      <select class="fsel" id="f-ppto" onchange="render()">
+        <option value="">Todos presupuestos</option>
+        <option value="Sin enviar">Sin enviar</option>
+        <option value="Enviado">Enviado</option>
+        <option value="Aceptado">Aceptado</option>
+        <option value="Rechazado">Rechazado</option>
+        <option value="Sin respuesta">Sin respuesta</option>
       </select>
+      <select class="fsel" id="fil-ccaa" onchange="render()">
+        <option value="">Todas las CCAA</option>
+        <option value="Andalucía">Andalucía</option>
+        <option value="Aragón">Aragón</option>
+        <option value="Asturias">Asturias</option>
+        <option value="Baleares">Baleares</option>
+        <option value="Canarias">Canarias</option>
+        <option value="Cantabria">Cantabria</option>
+        <option value="Castilla-La Mancha">Castilla-La Mancha</option>
+        <option value="Castilla y León">Castilla y León</option>
+        <option value="Cataluña">Cataluña</option>
+        <option value="Comunidad de Madrid">Comunidad de Madrid</option>
+        <option value="Comunidad Valenciana">Comunidad Valenciana</option>
+        <option value="Extremadura">Extremadura</option>
+        <option value="Galicia">Galicia</option>
+        <option value="La Rioja">La Rioja</option>
+        <option value="Navarra">Navarra</option>
+        <option value="País Vasco">País Vasco</option>
+        <option value="Región de Murcia">Región de Murcia</option>
+      </select>
+      <select class="fsel" id="f-estado" onchange="render()">
+        <option value="">Todos los estados</option>
+        <option>En conversación</option>
+        <option>Esperando respuesta</option>
+        <option>Volver a contactar</option>
+        <option>No responde</option>
+        <option>No encaja</option>
+        <option>Sin interés</option>
+      </select>
+      <select class="fsel" id="f-mes" onchange="render()">
+        <option value="">Todos (con y sin fecha)</option>
+        <option value="0">Sin fecha asignada</option>
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre 🎃</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre 🎄</option>
+      </select>
+      <input class="fsearch" id="f-q" placeholder="🔍 Buscar…" oninput="render()">
     </div>
-  </div>
 
-  <!-- Resultados -->
-  <div id="match-results-area">
-    <div class="match-empty">Selecciona un activo o un inversor arriba para ver los matches.</div>
-  </div>
-
-</div><!-- /page-matching -->
-
-<!-- FICHA INVERSOR (solo lectura) -->
-<div class="ficha-overlay" id="inv-ficha-overlay" onclick="closeInvFichaOutside(event)">
-  <div class="ficha" id="inv-ficha-panel">
-    <div class="ficha-handle"></div>
-    <div class="ficha-header">
-      <div>
-        <div class="ficha-nombre" id="inv-ficha-nombre">—</div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap" id="inv-ficha-badges"></div>
-      </div>
-      <div class="ficha-actions">
-        <button class="btn-outline" onclick="closeInvFicha()">✕</button>
-        <button class="btn" style="background:linear-gradient(135deg,#b8975a,#c9a84c);border:none" onclick="editFromInvFicha()">✏ Editar</button>
-      </div>
+    <div class="list-header">
+      <span>Nombre</span>
+      <span>Respuesta</span>
+      <span>Estado</span>
+      <span>Espectáculos</span>
+      <span>Fecha</span>
+      <span>Presupuesto</span>
     </div>
-    <div class="ficha-body" id="inv-ficha-body"></div>
-  </div>
-</div>
-
-<!-- MODAL INVERSOR (edición/creación) -->
-<div class="modal-overlay" id="inv-modal-overlay" onclick="closeInvModalOutside(event)">
-  <div class="modal" style="max-width:600px">
-    <h2 id="inv-modal-title">💼 Nuevo inversor</h2>
-    <div class="form-grid">
-
-      <div class="form-group">
-        <label>Nombre completo *</label>
-        <input type="text" id="inv-nombre" placeholder="Juan Martínez" autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" id="inv-telefono" placeholder="612 345 678" inputmode="tel">
-      </div>
-      <div class="form-group full">
-        <label>Email</label>
-        <input type="email" id="inv-email" placeholder="juan@empresa.com">
-      </div>
-      <div class="form-group">
-        <label>Empresa / Sociedad</label>
-        <input type="text" id="inv-empresa" placeholder="Inversiones JM S.L.">
-      </div>
-      <div class="form-group">
-        <label>Origen del contacto</label>
-        <select id="inv-origen">
-          <option value="Lead captado">Lead captado (de la app)</option>
-          <option value="Referido">Referido</option>
-          <option value="Red propia">Red propia</option>
-          <option value="Evento">Evento</option>
-          <option value="Otros">Otros</option>
-        </select>
-      </div>
-
-      <div class="form-group full" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
-        <label>Perfil inversor *</label>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-top:4px" id="inv-perfil-selector"></div>
-      </div>
-
-      <div class="form-group">
-        <label>Rango de capital *</label>
-        <select id="inv-capital">
-          <option value="Hasta 300k">Hasta 300k</option>
-          <option value="300k – 1M">300k – 1M</option>
-          <option value="+1M">+1M</option>
-          <option value="+5M">+5M</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Prioridad</label>
-        <select id="inv-prioridad">
-          <option value="Media">Media</option>
-          <option value="Alta">Alta</option>
-          <option value="Baja">Baja</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Estado</label>
-        <select id="inv-estado">
-          <option value="Nuevo contacto">Nuevo contacto</option>
-          <option value="Cualificado">Cualificado</option>
-          <option value="Propuesta enviada">Propuesta enviada</option>
-          <option value="En negociación">En negociación</option>
-          <option value="Cerrado">Cerrado</option>
-          <option value="Descartado">Descartado</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Agente responsable</label>
-        <select id="inv-agente">
-          <option value="Fernando">Fernando</option>
-          <option value="Greta">Greta</option>
-        </select>
-      </div>
-
-      <div class="form-group full" style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
-        <label>Tipos de activo de interés</label>
-        <div class="multi-check-grid" id="inv-tipos-activo-selector"></div>
-      </div>
-      <div class="form-group full">
-        <label>Zonas geográficas de interés</label>
-        <div class="multi-check-grid" id="inv-zonas-selector"></div>
-      </div>
-      <div class="form-group full">
-        <label>Notas adicionales de interés</label>
-        <input type="text" id="inv-zonas" placeholder="ej. Preferiblemente planta baja, con licencia de actividad...">
-      </div>
-      <div class="form-group full">
-        <label>Rentabilidad mínima esperada (%)</label>
-        <input type="text" id="inv-rentabilidad" placeholder="ej. 5% bruto" inputmode="decimal">
-      </div>
-      <div class="form-group full">
-        <label>Plazo de decisión</label>
-        <select id="inv-plazo">
-          <option value="Inmediato (–1 mes)">Inmediato (–1 mes)</option>
-          <option value="Corto (1–3 meses)">Corto (1–3 meses)</option>
-          <option value="Medio (3–6 meses)">Medio (3–6 meses)</option>
-          <option value="Largo (+6 meses)">Largo (+6 meses)</option>
-          <option value="Sin definir">Sin definir</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Motivación / qué busca exactamente</label>
-        <textarea id="inv-motivacion" placeholder="ej. Busca renta mensual estable para complementar pensión. No quiere gestionar inquilinos." style="min-height:80px"></textarea>
-      </div>
-      <div class="form-group full">
-        <label>Objeciones / restricciones</label>
-        <textarea id="inv-objeciones" placeholder="ej. No le gusta la zona Raval. Necesita financiación bancaria." style="min-height:60px"></textarea>
-      </div>
-      <div class="form-group full">
-        <label>Notas internas</label>
-        <textarea id="inv-notas" placeholder="ej. Conocido de Fernando. Muy discreto. Llamar jueves tarde." style="min-height:60px"></textarea>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-outline" id="inv-btn-delete" onclick="deleteInversor()" style="display:none;color:var(--red);border-color:var(--red)">🗑 Eliminar</button>
-      <button class="btn-outline" onclick="closeInvModal()">Cancelar</button>
-      <button class="btn" id="inv-btn-save" onclick="saveInversor()" style="background:linear-gradient(135deg,#b8975a,#c9a84c);border:none">Guardar inversor</button>
+    <div class="lead-list" id="lead-list"></div>
+    <div class="tbl-wrap" id="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Nombre</th><th>Teléfono</th><th>Respuesta</th>
+            <th>Espectáculos</th><th>Canal</th><th>Presupuesto</th>
+            <th>Estado</th><th>Fechas</th><th>Notas</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
+<button class="fab" onclick="openForm(null)" title="Nuevo lead">+</button>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closePanel()"></div>
+
+<!-- PANEL -->
+<div class="panel" id="panel">
+  <div class="panel-handle"></div>
+  <div class="panel-head">
+    <div class="panel-title" id="panel-title">Nuevo lead</div>
+    <button class="btn-ghost" style="padding:6px 12px;font-size:.8rem" onclick="closePanel()">✕</button>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
+
 <div id="toast"></div>
 
-<!-- MODAL LEAD (edición/creación) -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <h2 id="modal-title">➕ Nuevo lead</h2>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Nombre completo *</label>
-        <input type="text" id="f-nombre" placeholder="María García" autocomplete="off">
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" id="f-telefono" placeholder="612 345 678" autocomplete="tel" inputmode="tel" pattern="[+0-9\s\-()]*">
-      </div>
-      <div class="form-group full">
-        <label>Email</label>
-        <input type="email" id="f-email" placeholder="maria@ejemplo.com" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Activo de interés *</label>
-        <div class="product-selector" id="product-selector"></div>
-      </div>
-      <div class="form-group">
-        <label>Canal de entrada *</label>
-        <select id="f-canal">
-          <option value="Idealista">Idealista</option>
-          <option value="Meta">Meta</option>
-          <option value="WhatsApp">WhatsApp</option>
-          <option value="Otros">Otros</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Agente asignado *</label>
-        <select id="f-agente">
-          <option value="Fernando">Fernando</option>
-          <option value="Greta">Greta</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Estado</label>
-        <select id="f-estado">
-          <option value="No contactado">No contactado</option>
-          <option value="Contactado">Contactado</option>
-          <option value="Visita agendada">Visita agendada</option>
-          <option value="Visita realizada">Visita realizada</option>
-          <option value="Negociación">Negociación</option>
-          <option value="Cerrado">Cerrado</option>
-          <option value="Descartado">Descartado</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Fecha visita</label>
-        <input type="date" id="f-fecha" autocomplete="off">
-      </div>
-      <div class="form-group full">
-        <label>Notas / Siguiente acción</label>
-        <textarea id="f-notas" placeholder="ej. Muy interesado, llamar el lunes..."></textarea>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-outline" id="btn-delete-lead" onclick="deleteLead()" style="display:none;color:var(--red);border-color:var(--red)">🗑 Eliminar</button>
-      <button class="btn-outline" onclick="closeModal()">Cancelar</button>
-      <button class="btn" id="btn-save-lead" onclick="saveLead()">Guardar lead</button>
-    </div>
-  </div>
-</div>
-
-<!-- FICHA CLIENTE (solo lectura, con botón editar) -->
-<div class="ficha-overlay" id="ficha-overlay" onclick="closeFichaOutside(event)">
-  <div class="ficha" id="ficha-panel">
-    <div class="ficha-handle"></div>
-    <div class="ficha-header">
-      <div>
-        <div class="ficha-nombre" id="ficha-nombre">—</div>
-        <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap" id="ficha-badges"></div>
-      </div>
-      <div class="ficha-actions">
-        <button class="btn-outline" onclick="closeFicha()">✕</button>
-        <button class="btn-outline" onclick="convertirEnInversor()" style="color:#c9a84c;border-color:#c9a84c44" title="Promover este lead a inversor cualificado">💼 Convertir</button>
-        <button class="btn" onclick="editFromFicha()">✏ Editar</button>
-      </div>
-    </div>
-    <div class="ficha-body" id="ficha-body"></div>
-  </div>
-</div>
-
-<!-- MODAL GESTIONAR ACTIVOS -->
-<div class="modal-overlay" id="products-overlay" onclick="closeProductsOutside(event)">
-  <div class="modal">
-    <h2>⚙ Activos en mandato</h2>
-    <div id="products-list" style="margin-bottom:16px"></div>
-    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
-      <input type="text" id="new-product-name" placeholder="Nombre del activo" style="flex:1;min-width:140px">
-      <input type="text" id="new-product-icon" placeholder="🏗" style="width:60px">
-      <button class="btn" onclick="addProduct()">Añadir</button>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeProducts()">Listo</button>
-    </div>
-  </div>
-</div>
-
 <script>
-// ─────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
 // CONFIG
-// ─────────────────────────────────────────────
-const SCRIPT_URL_KEY = 'ancor_investment_script_url';
-const PRODUCTS_KEY   = 'ancor_investment_products';
+// ══════════════════════════════════════════════════════
+const LS  = 'sdm_leads_v3';
+const LSU = 'sdm_url_v3';
+const LSS = 'sdm_shows_v1';
 
-const PRODUCT_COLORS = [
-  { bg:'#f59e0b18', text:'#f59e0b', border:'#f59e0b33', bar:'#f59e0b' },
-  { bg:'#14b8a618', text:'#14b8a6', border:'#14b8a633', bar:'#14b8a6' },
-  { bg:'#a855f718', text:'#a855f7', border:'#a855f733', bar:'#a855f7' },
-  { bg:'#ef444418', text:'#ef4444', border:'#ef444433', bar:'#ef4444' },
-  { bg:'#3b82f618', text:'#3b82f6', border:'#3b82f633', bar:'#3b82f6' },
-  { bg:'#ec489918', text:'#ec4899', border:'#ec489933', bar:'#ec4899' },
+let leads   = [];
+let editId  = null;
+let selShows = [];
+let selDates = [];
+let scriptUrl = localStorage.getItem(LSU) || '';
+
+// ══════════════════════════════════════════════════════
+// SHOWS CATALOG (editable)
+// ══════════════════════════════════════════════════════
+const DEFAULT_SHOWS = [
+  {id:'orgos',     name:'Los Orgos',             icon:'🟡'},
+  {id:'chocolitos',name:'Los Chocolitos',         icon:'♻️'},
+  {id:'extintos',  name:'Los Extintos',           icon:'🦅'},
+  {id:'luminodrags',name:'Luminodrags',           icon:'🐉'},
+  {id:'lago',      name:'Los Monstruos del Lago', icon:'🟣'},
+  {id:'luminolife',name:'Luminolife',             icon:'💡'},
 ];
+function getShows(){
+  try{ return JSON.parse(localStorage.getItem(LSS)) || DEFAULT_SHOWS; }
+  catch(e){ return DEFAULT_SHOWS; }
+}
+function saveShows(arr){ localStorage.setItem(LSS, JSON.stringify(arr)); }
 
-const ESTADO_CLASS = {
-  'No contactado':'estado-Nuevo','Contactado':'estado-Contactado',
-  'Visita agendada':'estado-Visita_agendada','Visita realizada':'estado-Visita_realizada',
-  'Negociación':'estado-Negociación','Cerrado':'estado-Cerrado','Descartado':'estado-Descartado'
+// ══════════════════════════════════════════════════════
+// BADGE HELPERS
+// ══════════════════════════════════════════════════════
+const RESP_ACCENT = {
+  'Sin contactar':'#6b7280',
+  'Contactado':'#f59e0b',
+  'Respondió ✓':'#4ade80',
 };
+const RESP_CLS = {'Sin contactar':'b-gray','Contactado':'b-amber','Respondió ✓':'b-green'};
+const PPTO_CLS = {'Sin enviar':'b-gray','Enviado':'b-blue','Aceptado':'b-green','Rechazado':'b-red','Sin respuesta':'b-red'};
+const CANAL_CLS= {'Meta':'b-purple','Email':'b-blue','Web':'b-gold','Otro':'b-gray'};
+const ESTADO_CLS = {
+  'En conversación':'b-blue',
+  'Esperando respuesta':'b-amber',
+  'Volver a contactar':'b-teal',
+  'No responde':'b-red',
+  'No encaja':'b-gray',
+  'Sin interés':'b-gray',
+};
+const ESTADOS = ['En conversación','Esperando respuesta','Volver a contactar','No responde','No encaja','Sin interés'];
 
-// ─────────────────────────────────────────────
-// DATE UTILS — maneja múltiples formatos del Sheet
-// ─────────────────────────────────────────────
-function parseDate(raw) {
-  if (!raw || raw === '' || raw === 'Invalid Date') return null;
-  // Ya es formato YYYY-MM-DD
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-    const [y,m,d] = raw.split('-').map(Number);
-    return new Date(y, m-1, d);
+function badge(text, cls){ return `<span class="badge ${cls||'b-gray'}">${text}</span>`; }
+function fmtDate(d){
+  if(!d||d==='—') return '—';
+  // Try YYYY-MM-DD first
+  const iso = String(d).match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(iso){
+    const M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return `${parseInt(iso[3])} ${M[parseInt(iso[2])-1]} ${iso[1]}`;
   }
-  // Formato DD/MM/YYYY (Google Sheets a veces lo devuelve así)
-  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(raw)) {
-    const [d,m,y] = raw.split('/').map(Number);
-    return new Date(y, m-1, d);
+  // Fallback: parse as Date (handles Sheets-converted dates)
+  try{
+    const dt=new Date(d);
+    if(!isNaN(dt)){
+      const M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      return `${dt.getDate()} ${M[dt.getMonth()]} ${dt.getFullYear()}`;
+    }
+  }catch(e){}
+  return d;
+}
+function showName(id){ const s=getShows().find(x=>x.id===id); return s?`${s.icon} ${s.name}`:id; }
+
+// ══════════════════════════════════════════════════════
+// SYNC
+// ══════════════════════════════════════════════════════
+function setSyncDot(state){
+  const d = document.getElementById('sdot');
+  d.className = 'sync-dot' + (state ? ' '+state : '');
+}
+
+async function sync(){
+  if(!scriptUrl){ setSyncDot('err'); return; }
+  setSyncDot('spin');
+  try{
+    const res = await fetch(scriptUrl+'?action=getAll', {redirect:'follow', cache:'no-cache'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    if(data.ok){
+      leads = data.leads || [];
+      saveCache();
+      // Sync shows from server (merge with defaults)
+      if(data.shows && data.shows.length){
+        const merged = [...DEFAULT_SHOWS];
+        data.shows.forEach(s=>{ if(!merged.find(x=>x.id===s.id)) merged.push(s); });
+        saveShows(merged);
+        buildShowFilter();
+      }
+      setSyncDot('ok');
+      render();
+    } else {
+      setSyncDot('err');
+      toast('Error: '+data.error, 'err');
+    }
+  } catch(e){
+    setSyncDot('err');
+    toast('Sin conexión — usando datos locales', 'err');
   }
-  // Formato MM/DD/YYYY (locale US)
-  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(raw)) {
-    const parts = raw.split('/');
-    return new Date(Number(parts[2]), Number(parts[0])-1, Number(parts[1]));
-  }
-  // Intento genérico
-  const d = new Date(raw);
-  return isNaN(d.getTime()) ? null : d;
 }
 
-function formatDateShort(raw) {
-  const d = parseDate(raw);
-  if (!d) return '—';
-  return d.toLocaleDateString('es-ES', {day:'2-digit', month:'short'});
+async function pushLead(lead){
+  if(!scriptUrl) return true; // offline ok
+  try{
+    const url = scriptUrl+'?action=save&d='+encodeURIComponent(JSON.stringify(lead));
+    const res = await fetch(url, {redirect:'follow', cache:'no-cache'});
+    const data = await res.json();
+    return data.ok;
+  } catch(e){ return false; }
 }
 
-function formatDateLong(raw) {
-  const d = parseDate(raw);
-  if (!d) return null;
-  return d.toLocaleDateString('es-ES', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+async function pushDelete(id){
+  if(!scriptUrl) return true;
+  try{
+    const res = await fetch(scriptUrl+'?action=del&id='+id, {redirect:'follow', cache:'no-cache'});
+    const data = await res.json();
+    return data.ok;
+  } catch(e){ return false; }
 }
 
-function formatDateFull(raw) {
-  const d = parseDate(raw);
-  if (!d) return null;
-  return d.toLocaleDateString('es-ES', {weekday:'short', day:'2-digit', month:'short', year:'numeric'});
+function saveCache(){ localStorage.setItem(LS, JSON.stringify(leads)); }
+function loadCache(){
+  try{ leads = JSON.parse(localStorage.getItem(LS)||'[]'); }catch(e){ leads=[]; }
 }
 
-// Convierte fecha parseada a YYYY-MM-DD para el input date
-function toInputDate(raw) {
-  const d = parseDate(raw);
-  if (!d) return '';
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const dd = String(d.getDate()).padStart(2,'0');
-  return `${y}-${m}-${dd}`;
-}
-let scriptUrl = localStorage.getItem(SCRIPT_URL_KEY) || '';
-let products  = [];
-let leads        = [];
-let editRowId    = null;
-let selectedProd = null;
-let isSaving     = false;
-let isSavingProduct = false;
-
-// ─────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
 // SETUP
-// ─────────────────────────────────────────────
-function saveScriptUrl() {
-  const val = document.getElementById('script-url-input').value.trim();
-  if (!val.startsWith('https://script.google.com')) {
-    showToast('URL inválida. Debe empezar por https://script.google.com', 'error'); return;
-  }
-  scriptUrl = val;
-  localStorage.setItem(SCRIPT_URL_KEY, scriptUrl);
-  document.getElementById('setup-banner').classList.add('hidden');
-  showToast('✅ URL guardada. Cargando leads…', 'success');
-  loadLeads();
+// ══════════════════════════════════════════════════════
+function conectar(){
+  const v = document.getElementById('su-input').value.trim();
+  if(!v){ toast('Pega la URL primero','err'); return; }
+  scriptUrl = v;
+  localStorage.setItem(LSU, scriptUrl);
+  startApp();
+}
+function sinSync(){
+  scriptUrl = '';
+  localStorage.removeItem(LSU);
+  startApp();
+}
+function startApp(){
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  loadCache();
+  buildShowFilter();
+  render();
+  if(scriptUrl) sync();
+  else setSyncDot('err');
 }
 
-function initSetup() {
-  if (scriptUrl) {
-    document.getElementById('setup-banner').classList.add('hidden');
-    loadLeads();
-  } else {
-    setSyncStatus('error', 'Sin conectar');
-  }
-}
 
-// ─────────────────────────────────────────────
-// SYNC STATUS
-// ─────────────────────────────────────────────
-function setSyncStatus(state, text) {
-  const dot  = document.getElementById('sync-dot');
-  const span = document.getElementById('sync-text');
-  dot.className  = 'sync-dot ' + state;
-  span.textContent = text;
-}
+// ══════════════════════════════════════════════════════
+// RENDER TABLE (desktop)
+// ══════════════════════════════════════════════════════
+const ESTADO_COLOR = {
+  'En conversación':'es-conv','Esperando respuesta':'es-esp',
+  'Volver a contactar':'es-vol','No responde':'es-nor',
+  'No encaja':'es-enc','Sin interés':'es-int'
+};
+const CANAL_COLOR = {'Meta':'#a855f7','Email':'#60a5fa','Web':'#C9A227','Otro':'#6b7280'};
 
-// ─────────────────────────────────────────────
-// LOAD — Leads Y Activos desde Sheet
-// ─────────────────────────────────────────────
-async function loadLeads() {
-  if (!scriptUrl) return;
-  setSyncStatus('loading', 'Sincronizando…');
-
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 12000);
-
-  try {
-    // Cargamos leads y activos en paralelo
-    const [resLeads, resProducts] = await Promise.all([
-      fetch(scriptUrl + '?action=getLeads',    { method:'GET', signal: controller.signal }),
-      fetch(scriptUrl + '?action=getProducts', { method:'GET', signal: controller.signal }),
-    ]);
-    clearTimeout(timeoutId);
-
-    const dataLeads    = await resLeads.json();
-    const dataProducts = await resProducts.json();
-
-    // ── Procesar activos ──
-    if (dataProducts.ok && dataProducts.products && dataProducts.products.length > 0) {
-      products = dataProducts.products.map((p, i) => ({
-        id:     p.id   || 'prod_' + i,
-        name:   p.name || 'Sin nombre',
-        icon:   p.icon || '📦',
-        ...(PRODUCT_COLORS[i % PRODUCT_COLORS.length]),
-      }));
-    } else if (products.length === 0) {
-      // Fallback si la hoja de activos está vacía — defaults
-      products = [
-        { id:'solar', name:'Solar Vilafranca', icon:'🌍', ...PRODUCT_COLORS[0] },
-        { id:'local', name:'Local Aribau',     icon:'🏢', ...PRODUCT_COLORS[1] },
-      ];
-    }
-
-    // ── Procesar leads ──
-    leads = (dataLeads.leads || []).map(l => ({
-      id:       l.id       || '',
-      nombre:   l.nombre   || '',
-      telefono: l.telefono || '',
-      email:    l.email    || l.correo || l['e-mail'] || l.mail || '',
-      producto: l.producto || '',
-      canal:    l.canal    || '',
-      agente:   l.agente   || '',
-      estado:   l.estado   || 'No contactado',
-      fecha:    l.fecha    || '',
-      notas:    l.notas    || '',
-    }));
-
-    setSyncStatus('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit',minute:'2-digit'}));
-    renderAll();
-
-  } catch(e) {
-    clearTimeout(timeoutId);
-    if (e.name === 'AbortError') {
-      setSyncStatus('error', 'Tiempo de espera agotado');
-      showToast('⏱ La conexión tardó demasiado. Pulsa ↻ para reintentar.', 'error');
-    } else {
-      setSyncStatus('error', 'Error de conexión');
-      showToast('❌ No se pudo conectar: ' + e.message, 'error');
-    }
-  }
-}
-
-// ─────────────────────────────────────────────
-// SAVE LEAD TO SHEETS
-// ─────────────────────────────────────────────
-async function saveLead() {
-  if (isSaving) return;
-
-  // ── Validación campos obligatorios ──
-  const nombre = document.getElementById('f-nombre').value.trim();
-  const canal  = document.getElementById('f-canal').value;
-
-  if (!nombre) {
-    showToast('⚠️ El nombre es obligatorio', 'error');
-    document.getElementById('f-nombre').focus();
-    return;
-  }
-  if (!selectedProd) {
-    showToast('⚠️ Selecciona un activo', 'error');
-    return;
-  }
-  if (!canal) {
-    showToast('⚠️ Selecciona un canal', 'error');
-    document.getElementById('f-canal').focus();
-    return;
-  }
-
-  const lead = {
-    id:       editRowId || ('lead_' + Date.now()),
-    nombre,
-    telefono: document.getElementById('f-telefono').value.trim(),
-    email:    document.getElementById('f-email').value.trim(),
-    producto: selectedProd,
-    canal,
-    agente:   document.getElementById('f-agente').value,
-    estado:   document.getElementById('f-estado').value,
-    fecha:    document.getElementById('f-fecha').value,
-    notas:    document.getElementById('f-notas').value.trim(),
-  };
-
-  isSaving = true;
-  const btn = document.getElementById('btn-save-lead');
-  btn.disabled = true; btn.textContent = 'Guardando…';
-
-  // Timeout de 12 segundos para el guardado
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 12000);
-
-  try {
-    const action = editRowId ? 'updateLead' : 'addLead';
-    const res = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action, lead }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    const data = await res.json();
-    if (data.ok) {
-      showToast(editRowId ? '✅ Lead actualizado' : '✅ Lead añadido', 'success');
-      closeModal();
-      await loadLeads();
-    } else {
-      showToast('❌ Error: ' + (data.error || 'desconocido'), 'error');
-    }
-  } catch(e) {
-    clearTimeout(timeoutId);
-    if (e.name === 'AbortError') {
-      showToast('⏱ Tiempo de espera agotado. Verifica tu conexión.', 'error');
-    } else {
-      showToast('❌ Error de conexión al guardar', 'error');
-    }
-  } finally {
-    isSaving = false; btn.disabled = false; btn.textContent = 'Guardar lead';
-  }
-}
-
-// ─────────────────────────────────────────────
-// DELETE LEAD
-// ─────────────────────────────────────────────
-async function deleteLead() {
-  if (!editRowId || !confirm('¿Eliminar este lead?')) return;
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 12000);
-  try {
-    const res = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'deleteLead', lead: { id: editRowId } }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    const data = await res.json();
-    if (data.ok) {
-      showToast('🗑 Lead eliminado', 'success');
-      closeModal();
-      await loadLeads();
-    } else {
-      showToast('❌ Error al eliminar: ' + (data.error || ''), 'error');
-    }
-  } catch(e) {
-    clearTimeout(timeoutId);
-    if (e.name === 'AbortError') {
-      showToast('⏱ Tiempo de espera agotado', 'error');
-    } else {
-      showToast('❌ Error de conexión al eliminar', 'error');
-    }
-  }
-}
-
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
-function getProduct(id) { return products.find(p => p.id === id) || { name: id, icon:'📦', bg:'#4f7cff18', text:'var(--accent)', border:'#4f7cff33', bar:'var(--accent)' }; }
-
-function getFiltered() {
-  const producto = document.getElementById('filter-producto').value;
-  const agente   = document.getElementById('filter-agente').value;
-  const canal    = document.getElementById('filter-canal').value;
-  const estado   = document.getElementById('filter-estado').value;
-  const search   = document.getElementById('filter-search').value.toLowerCase();
-  return leads.filter(l => {
-    if (producto && l.producto !== producto) return false;
-    if (agente   && l.agente   !== agente)   return false;
-    if (canal    && l.canal    !== canal)     return false;
-    if (estado   && l.estado   !== estado)   return false;
-    if (search   && !l.nombre.toLowerCase().includes(search)) return false;
-    return true;
-  });
-}
-
-function renderAll() {
-  renderProductFilter();
-  renderBreakdown();
-  renderKPIs();
-  renderTable();
-}
-
-function renderProductFilter() {
-  const sel = document.getElementById('filter-producto');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">Todos los activos</option>' +
-    products.map(p => `<option value="${p.id}" ${cur===p.id?'selected':''}>${p.icon} ${p.name}</option>`).join('');
-}
-
-function renderBreakdown() {
-  const total = leads.length;
-  const activeFilter = document.getElementById('filter-producto').value;
-  document.getElementById('breakdown-cards').innerHTML = products.map(p => {
-    const pLeads   = leads.filter(l => l.producto === p.id);
-    const pVisitas = pLeads.filter(l => ['Visita agendada','Visita realizada','Negociación','Cerrado'].includes(l.estado)).length;
-    const pct      = total > 0 ? Math.round(pLeads.length / total * 100) : 0;
-    const sel      = activeFilter === p.id;
-    return `<div class="breakdown-card ${sel?'selected':''}" onclick="toggleProductFilter('${p.id}')">
-      <div class="breakdown-icon" style="background:${p.bg||'#4f7cff18'}"><span style="font-size:1.4rem">${p.icon}</span></div>
-      <div class="breakdown-data">
-        <div class="breakdown-name">${p.name}</div>
-        <div class="breakdown-stats">
-          <span class="breakdown-stat"><strong>${pLeads.length}</strong> leads</span>
-          <span class="breakdown-stat"><strong>${pVisitas}</strong> visitas</span>
-        </div>
-        <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${pct}%;background:${p.bar||'var(--accent)'}"></div></div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleProductFilter(id) {
-  const sel = document.getElementById('filter-producto');
-  sel.value = sel.value === id ? '' : id;
-  renderAll();
-}
-
-function renderKPIs() {
-  const filtered   = getFiltered();
-  const total      = filtered.length;
-  const agendadas  = filtered.filter(l => l.estado === 'Visita agendada').length;
-  const realizadas = filtered.filter(l => ['Visita realizada','Negociación','Cerrado'].includes(l.estado)).length;
-  const conv       = total > 0 ? Math.round((agendadas + realizadas) / total * 100) : null;
-  const activeFilter = document.getElementById('filter-producto').value;
-  const prod       = activeFilter ? getProduct(activeFilter) : null;
-
-  document.getElementById('kpi-total').textContent      = total;
-  document.getElementById('kpi-total-sub').textContent  = prod ? `en ${prod.name}` : 'total en pipeline';
-  document.getElementById('kpi-visitas').textContent    = agendadas;
-  document.getElementById('kpi-realizadas').textContent = realizadas;
-  document.getElementById('kpi-conv').textContent       = conv !== null ? conv + '%' : '—';
-
-  // Tooltips dinámicos en KPI subtítulos
-  document.getElementById('kpi-visitas-sub').textContent =
-    agendadas === 0 ? 'ninguna pendiente' : `estado "Visita agendada"`;
-  document.getElementById('kpi-realizadas-sub').textContent =
-    realizadas === 0 ? 'ninguna aún' : `Visita realizada / Negociación / Cerrado`;
-  document.getElementById('kpi-conv-sub').textContent =
-    conv !== null ? `${agendadas + realizadas} de ${total} leads` : 'sin datos';
-}
-
-function renderTable() {
-  const filtered  = getFiltered();
-  const tbody     = document.getElementById('leads-tbody');
-  const cardsWrap = document.getElementById('leads-cards');
-
-  const emptyMsg = !scriptUrl ? 'Conecta con Google Sheets para ver los leads.' :
-    leads.length === 0 ? 'Sin leads. Pulsa «+ Nuevo lead» para empezar.' :
-    'Sin resultados para los filtros aplicados.';
-
-  if (filtered.length === 0) {
-    tbody.innerHTML    = `<tr><td colspan="9" class="empty">${emptyMsg}</td></tr>`;
-    cardsWrap.innerHTML = `<div class="empty" style="text-align:center;padding:48px 24px;color:var(--muted)">${emptyMsg}</div>`;
-    return;
-  }
-
-  // ── Tabla escritorio ──
-  tbody.innerHTML = filtered.map(l => {
-    const prod      = getProduct(l.producto);
-    const avatarCls = l.agente === 'Fernando' ? 'avatar-f' : 'avatar-g';
-    const initials  = l.agente === 'Fernando' ? 'FB' : 'GR';
-    const fechaStr  = formatDateShort(l.fecha);
-    const canalKey  = (l.canal||'').replace(/\s/g,'');
-    const esInversor = inversores.some(i =>
-      i.nombre.toLowerCase() === l.nombre.toLowerCase() ||
-      (l.telefono && i.telefono === l.telefono)
-    );
-    return `<tr onclick="editLead('${l.id}')">
-      <td class="name">${l.nombre}${esInversor ? ' <span style="font-size:0.62rem;background:#c9a84c22;color:#c9a84c;border:1px solid #c9a84c44;padding:1px 6px;border-radius:10px;font-weight:700;vertical-align:middle">💼</span>' : ''}</td>
-      <td class="phone">${l.telefono||'—'}</td>
-      <td style="color:var(--muted2);font-size:0.75rem">${l.email ? `<a href="mailto:${l.email}" style="color:var(--accent);text-decoration:none" onclick="event.stopPropagation()">${l.email}</a>` : '—'}</td>
-      <td><span class="badge" style="background:${prod.bg};color:${prod.text};border:1px solid ${prod.border}">${prod.icon} ${prod.name}</span></td>
-      <td><span class="badge canal-${canalKey}"><span class="badge-dot"></span>${l.canal||'—'}</span></td>
-      <td><span class="agente-chip"><span class="avatar ${avatarCls}">${initials}</span>${l.agente}</span></td>
-      <td><span class="badge ${ESTADO_CLASS[l.estado]||''}">${l.estado||'—'}</span></td>
-      <td>${fechaStr}</td>
-      <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;color:var(--muted2)">${l.notas||'—'}</td>
+function renderTable(f){
+  const tbody = document.getElementById('tbl-body');
+  if(!tbody) return;
+  if(!f.length){ tbody.innerHTML=`<tr><td colspan="9" class="empty" style="padding:40px;text-align:center">${leads.length?'Sin resultados.':'Pulsa + para añadir tu primer lead.'}</td></tr>`; return; }
+  tbody.innerHTML = f.map(l=>{
+    const shows = getShows();
+    const showNames = (l.shows||[]).map(id=>{ const s=shows.find(x=>x.id===id); return s?`${s.icon} ${s.name}`:id; });
+    const showsHTML = showNames.length
+      ? showNames.map(n=>`<span class="badge b-gold" style="font-size:.67rem">${n}</span>`).join('')
+      : '<span style="color:var(--muted2)">—</span>';
+    const pFechas = (l.fechas||[]);
+    const fechasHTML = pFechas.length
+      ? pFechas.map(d=>`<div style="font-size:.72rem;color:var(--muted2);white-space:nowrap;line-height:1.8">📅 ${fmtDate(d)}</div>`).join('')
+      : '<span style="color:var(--muted2)">—</span>';
+    const cColor = CANAL_COLOR[l.canal]||'#6b7280';
+    const eCls = ESTADO_COLOR[l.estado]||'es-enc';
+    return `<tr onclick="openDetail('${l.id}')">
+      <td>
+        <div class="td-name">${l.nombre||'—'}</div>
+        ${l.municipio?`<div class="td-sub">${l.municipio}</div>`:''}
+        ${l.ccaa?`<div style="font-size:.66rem;color:var(--muted2);margin-top:2px">${l.ccaa}</div>`:''}
+        ${!l.municipio&&!l.ccaa?'<div class="td-sub">—</div>':''}
+      </td>
+      <td style="color:var(--muted2);white-space:nowrap">${l.telefono||'—'}</td>
+      <td>${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}</td>
+      <td><div class="td-shows">${showsHTML}</div></td>
+      <td><span class="canal-dot"><span class="cdot" style="background:${cColor}"></span>${l.canal||'—'}</span></td>
+      <td>${badge(l.ppto||'Sin enviar',PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}</td>
+      <td><span class="td-estado ${eCls}">${l.estado||'—'}</span></td>
+      <td>${fechasHTML}</td>
+      <td class="td-nota" title="${(l.notas||'').replace(/"/g,'')}">${l.notas||'—'}</td>
     </tr>`;
   }).join('');
+}
 
-  // ── Cards móvil ──
-  cardsWrap.innerHTML = filtered.map(l => {
-    const prod      = getProduct(l.producto);
-    const avatarCls = l.agente === 'Fernando' ? 'avatar-f' : 'avatar-g';
-    const initials  = l.agente === 'Fernando' ? 'FB' : 'GR';
-    const canalKey  = (l.canal||'').replace(/\s/g,'');
-    const tieneCita = l.fecha && l.estado === 'Visita agendada';
-    const fechaStr  = formatDateFull(l.fecha);
-    const esInversor = inversores.some(i =>
-      i.nombre.toLowerCase() === l.nombre.toLowerCase() ||
-      (l.telefono && i.telefono === l.telefono)
-    );
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
+function buildShowFilter(){
+  const sel = document.getElementById('f-show');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todos los shows</option>' +
+    getShows().map(s=>`<option value="${s.id}" ${cur===s.id?'selected':''}>${s.icon} ${s.name}</option>`).join('');
+}
 
-    const citaBanner = tieneCita ? `
-      <div class="card-cita">
-        <div class="card-cita-icon">📅</div>
-        <div class="card-cita-info">
-          <div class="card-cita-label">Cita agendada</div>
-          <div class="card-cita-date">${fechaStr}</div>
-        </div>
-      </div>` : (l.fecha && fechaStr ? `
-      <div class="card-cita" style="background:#4f7cff0d;border-color:#4f7cff33">
-        <div class="card-cita-icon">📋</div>
-        <div class="card-cita-info">
-          <div class="card-cita-label" style="color:var(--accent)">Fecha visita</div>
-          <div class="card-cita-date">${fechaStr}</div>
-        </div>
-      </div>` : '');
+const SHOW_COLORS=['#C9A227','#4ade80','#f87171','#a855f7','#38bdf8','#fb923c'];
 
-    return `<div class="lead-card ${tieneCita?'has-cita':''}" onclick="openFicha('${l.id}')">
-      <div class="card-top">
-        <div style="min-width:0;flex:1">
-          <div class="card-name">${l.nombre}${esInversor ? ' <span style="font-size:0.65rem;background:#c9a84c22;color:#c9a84c;border:1px solid #c9a84c44;padding:1px 6px;border-radius:10px;font-weight:700">💼 INVERSOR</span>' : ''}</div>
-          ${l.telefono ? `<div class="card-phone">📞 ${l.telefono}</div>` : ''}
-          ${l.email    ? `<div class="card-email-line">✉ ${l.email}</div>` : ''}
-        </div>
-        <span class="badge ${ESTADO_CLASS[l.estado]||''}" style="flex-shrink:0;margin-top:2px">${l.estado||'—'}</span>
-      </div>
-      ${citaBanner}
-      <div class="card-badges">
-        <span class="badge" style="background:${prod.bg};color:${prod.text};border:1px solid ${prod.border}">${prod.icon} ${prod.name}</span>
-        <span class="badge canal-${canalKey}"><span class="badge-dot"></span>${l.canal||'—'}</span>
-      </div>
-      <div class="card-bottom">
-        <span class="card-agente"><span class="avatar ${avatarCls}">${initials}</span>${l.agente}</span>
-        <span style="font-size:0.72rem;color:var(--muted)">Ver ficha →</span>
-      </div>
+const MONTHS_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct 🎃','Nov','Dic 🎄'];
+const MONTH_COLORS = ['#60a5fa','#818cf8','#34d399','#a78bfa','#f472b6','#fb923c','#fbbf24','#f87171','#2dd4bf','#f97316','#94a3b8','#38bdf8'];
+
+function renderMonthBreakdown(){
+  const activeM = document.getElementById('f-mes').value;
+  const container = document.getElementById('month-breakdown');
+  if(!container) return;
+  // Count leads per month (from all their fechas)
+  const counts = new Array(12).fill(0);
+  leads.forEach(l=>{
+    const months = new Set();
+    (l.fechas||[]).forEach(d=>{ const m=parseInt(d.split('-')[1]); if(m>=1&&m<=12) months.add(m); });
+    months.forEach(m=>counts[m-1]++);
+  });
+  const max = Math.max(...counts, 1);
+  const sinFecha = leads.filter(l=>!(l.fechas||[]).length).length;
+  const sfActive = activeM === '0';
+  const sfCard = `<div class="month-bc ${sfActive?'active':''}" onclick="toggleMonthFilter(0)">
+    <div class="month-bc-name">📭 Sin fecha</div>
+    ${sinFecha>0?`<div class="month-bc-count">${sinFecha}</div>`:''}
+  </div>`;
+
+  const monthCards = MONTHS_SHORT.map((name,i)=>{
+    const cnt = counts[i];
+    const active = activeM === String(i+1);
+    const col = MONTH_COLORS[i];
+    return `<div class="month-bc ${active?'active':''}" onclick="toggleMonthFilter(${i+1})">
+      <div class="month-bc-name" style="${cnt>0?'color:'+col:''}">${name}</div>
+      ${cnt>0?`<div class="month-bc-count">${cnt}</div>`:''}
+    </div>`;
+  }).join('');
+  container.innerHTML = sfCard + monthCards;
+}
+
+function toggleMonthFilter(m){
+  const sel = document.getElementById('f-mes');
+  sel.value = sel.value===String(m) ? '' : String(m);
+  render();
+}
+function clearMonthFilter(){
+  document.getElementById('f-mes').value='';
+  render();
+}
+
+function renderBreakdown(){
+  const shows = getShows();
+  const total = leads.length;
+  const activeF = document.getElementById('f-show').value;
+  const container = document.getElementById('show-breakdown');
+  if(!container) return;
+  container.innerHTML = shows.map((s,i)=>{
+    const cnt = leads.filter(l=>(l.shows||[]).includes(s.id)).length;
+    const pct = total>0 ? Math.round(cnt/total*100) : 0;
+    const active = activeF === s.id;
+    const col = SHOW_COLORS[i % SHOW_COLORS.length];
+    return `<div class="show-bc ${active?'active':''}" onclick="toggleShowFilter('${s.id}')">
+      <div class="show-bc-name">${s.icon} ${s.name}</div>
+      <div class="show-bc-count">${cnt} lead${cnt!==1?'s':''}</div>
+      <div class="show-bar-wrap"><div class="show-bar" style="width:${pct}%;background:${col}"></div></div>
     </div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────────────
-// MODAL LEAD
-// ─────────────────────────────────────────────
-function renderProductSelector(selected) {
-  document.getElementById('product-selector').innerHTML = products.map(p =>
-    `<div class="product-option ${selected===p.id?'selected':''}" onclick="selectProd('${p.id}',this)">
-      <span>${p.icon}</span> ${p.name}
-    </div>`
-  ).join('');
-  selectedProd = selected || (products[0]?.id || null);
+function toggleShowFilter(id){
+  const sel = document.getElementById('f-show');
+  sel.value = sel.value===id ? '' : id;
+  render();
 }
 
-function selectProd(id, el) {
-  selectedProd = id;
-  document.querySelectorAll('.product-option').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function openModal(id = null) {
-  editRowId = id;
-  const lead = id ? leads.find(l => l.id === id) : null;
-  document.getElementById('modal-title').textContent = lead ? '✏️ Editar lead' : '➕ Nuevo lead';
-  document.getElementById('f-nombre').value   = lead?.nombre   || '';
-  document.getElementById('f-telefono').value = lead?.telefono || '';
-  document.getElementById('f-email').value    = lead?.email    || '';
-  document.getElementById('f-canal').value    = lead?.canal    || 'Idealista';
-  document.getElementById('f-agente').value   = lead?.agente   || 'Fernando';
-  document.getElementById('f-estado').value   = lead?.estado   || 'No contactado';
-  document.getElementById('f-notas').value    = lead?.notas    || '';
-  document.getElementById('btn-delete-lead').style.display = lead ? 'inline-flex' : 'none';
-  renderProductSelector(lead?.producto || null);
-  // Fix fecha: normalizar formato para input[type=date]
-  const fechaEl = document.getElementById('f-fecha');
-  fechaEl.value = '';
-  if (lead?.fecha) { setTimeout(() => { fechaEl.value = toInputDate(lead.fecha); }, 50); }
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-function editLead(id) { openModal(id); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); editRowId = null; }
-function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
-
-// ─────────────────────────────────────────────
-// FICHA CLIENTE (solo lectura)
-// ─────────────────────────────────────────────
-let fichaLeadId = null;
-
-function openFicha(id) {
-  const l = leads.find(l => l.id === id);
-  if (!l) return;
-  fichaLeadId = id;
-  const prod      = getProduct(l.producto);
-  const avatarCls = l.agente === 'Fernando' ? 'avatar-f' : 'avatar-g';
-  const initials  = l.agente === 'Fernando' ? 'FB' : 'GR';
-  const canalKey  = (l.canal||'').replace(/\s/g,'');
-  const fechaStr  = formatDateLong(l.fecha);
-  const tieneCita = l.fecha && l.estado === 'Visita agendada';
-
-  document.getElementById('ficha-nombre').textContent = l.nombre;
-
-  document.getElementById('ficha-badges').innerHTML =
-    `<span class="badge ${ESTADO_CLASS[l.estado]||''}">${l.estado||'—'}</span>
-     <span class="badge" style="background:${prod.bg};color:${prod.text};border:1px solid ${prod.border}">${prod.icon} ${prod.name}</span>
-     <span class="badge canal-${canalKey}"><span class="badge-dot"></span>${l.canal||'—'}</span>`;
-
-  let body = '';
-
-  // Banner cita si existe fecha
-  if (l.fecha) {
-    const color = tieneCita ? '#22c55e' : 'var(--accent)';
-    const bg    = tieneCita ? '#22c55e12' : '#4f7cff0d';
-    const bc    = tieneCita ? '#22c55e44' : '#4f7cff33';
-    const icon  = tieneCita ? '📅' : '📋';
-    const lbl   = tieneCita ? 'Cita agendada' : 'Fecha de visita';
-    body += `<div class="ficha-cita-banner" style="background:${bg};border-color:${bc}">
-      <div class="icon">${icon}</div>
-      <div>
-        <div class="info-label" style="color:${color}">${lbl}</div>
-        <div class="info-value">${fechaStr}</div>
-      </div>
-    </div>`;
-  }
-
-  // Datos de contacto
-  body += `<div class="ficha-section">
-    <div class="ficha-section-title">Datos de contacto</div>
-    <div class="ficha-grid">
-      <div class="ficha-field">
-        <div class="ficha-field-label">Teléfono</div>
-        <div class="ficha-field-value">${l.telefono ? `<a href="tel:${l.telefono}" style="color:var(--accent);text-decoration:none">${l.telefono}</a>` : '<span class="muted">—</span>'}</div>
-      </div>
-      <div class="ficha-field">
-        <div class="ficha-field-label">Email</div>
-        <div class="ficha-field-value">${l.email ? `<a href="mailto:${l.email}" style="color:var(--accent);text-decoration:none;font-size:0.8rem">${l.email}</a>` : '<span class="muted">—</span>'}</div>
-      </div>
-    </div>
-  </div>`;
-
-  // Datos del lead
-  body += `<div class="ficha-section">
-    <div class="ficha-section-title">Información del lead</div>
-    <div class="ficha-grid">
-      <div class="ficha-field">
-        <div class="ficha-field-label">Canal de entrada</div>
-        <div class="ficha-field-value">${l.canal||'—'}</div>
-      </div>
-      <div class="ficha-field">
-        <div class="ficha-field-label">Agente responsable</div>
-        <div class="ficha-field-value"><span class="agente-chip"><span class="avatar ${avatarCls}" style="width:20px;height:20px;font-size:0.55rem">${initials}</span>${l.agente}</span></div>
-      </div>
-    </div>
-  </div>`;
-
-  // Notas
-  if (l.notas) {
-    body += `<div class="ficha-section">
-      <div class="ficha-section-title">Notas / Siguiente acción</div>
-      <div class="ficha-notas">${l.notas}</div>
-    </div>`;
-  }
-
-  document.getElementById('ficha-body').innerHTML = body;
-  document.getElementById('ficha-overlay').classList.add('open');
-}
-
-function closeFicha() {
-  document.getElementById('ficha-overlay').classList.remove('open');
-  fichaLeadId = null;
-}
-
-function closeFichaOutside(e) {
-  if (e.target === document.getElementById('ficha-overlay')) closeFicha();
-}
-
-function editFromFicha() {
-  const id = fichaLeadId;
-  closeFicha();
-  setTimeout(() => openModal(id), 100);
-}
-
-function convertirEnInversor() {
-  const lead = leads.find(l => l.id === fichaLeadId);
-  if (!lead) return;
-
-  // Verificar si ya existe como inversor (mismo nombre + teléfono)
-  const yaExiste = inversores.find(i =>
-    i.nombre.toLowerCase() === lead.nombre.toLowerCase() ||
-    (lead.telefono && i.telefono === lead.telefono)
-  );
-  if (yaExiste) {
-    if (!confirm(`"${lead.nombre}" ya existe en Inversores. ¿Abrir su ficha para editarla?`)) return;
-    closeFicha();
-    setTimeout(() => { switchTab('inversores'); openInvModal(yaExiste.id); }, 150);
-    return;
-  }
-
-  closeFicha();
-
-  // Pre-rellenar el modal de inversor con los datos del lead
-  setTimeout(() => {
-    switchTab('inversores');
-    setTimeout(() => {
-      openInvModal(); // abre en blanco primero
-      // Luego rellena los campos que ya conocemos
-      document.getElementById('inv-nombre').value   = lead.nombre   || '';
-      document.getElementById('inv-telefono').value = lead.telefono || '';
-      document.getElementById('inv-email').value    = lead.email    || '';
-      document.getElementById('inv-agente').value   = lead.agente   || 'Fernando';
-      document.getElementById('inv-origen').value   = 'Lead captado';
-      document.getElementById('inv-modal-title').textContent = `💼 Convertir lead → Inversor`;
-      // Nota automática con origen
-      document.getElementById('inv-notas').value =
-        `Convertido desde lead · Activo: ${(products.find(p=>p.id===lead.producto)||{name:lead.producto}).name} · Canal: ${lead.canal}${lead.notas ? '\n\nNotas lead: ' + lead.notas : ''}`;
-      showToast('✅ Datos del lead pre-cargados. Completa el perfil.', 'success');
-    }, 150);
-  }, 100);
-}
-
-// ─────────────────────────────────────────────
-// MODAL PRODUCTOS
-// ─────────────────────────────────────────────
-function openManageProducts() { renderProductsList(); document.getElementById('products-overlay').classList.add('open'); }
-function closeProducts() { document.getElementById('products-overlay').classList.remove('open'); renderAll(); }
-function closeProductsOutside(e) { if (e.target === document.getElementById('products-overlay')) closeProducts(); }
-
-function renderProductsList() {
-  const c = document.getElementById('products-list');
-  if (!products.length) { c.innerHTML = '<p style="color:var(--muted);font-size:0.8rem">Sin activos todavía.</p>'; return; }
-  c.innerHTML = products.map(p =>
-    `<div class="prod-row">
-      <span style="font-size:1.2rem">${p.icon}</span>
-      <span>${p.name}</span>
-      <span class="prod-count">${leads.filter(l=>l.producto===p.id).length} leads</span>
-      <button class="btn-del" onclick="removeProduct('${p.id}')">✕</button>
-    </div>`
-  ).join('');
-}
-
-async function addProduct() {
-  if (isSavingProduct) return;
-  const name = document.getElementById('new-product-name').value.trim();
-  const icon = document.getElementById('new-product-icon').value.trim() || '📦';
-  if (!name) { showToast('⚠️ Escribe el nombre del activo', 'error'); return; }
-
-  const newProduct = {
-    id:   'prod_' + Date.now(),
-    name,
-    icon,
-  };
-
-  isSavingProduct = true;
-  const btn = document.querySelector('#products-overlay .btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
-
-  try {
-    const res  = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'addProduct', product: newProduct }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      document.getElementById('new-product-name').value = '';
-      document.getElementById('new-product-icon').value = '';
-      showToast('✅ Activo añadido y sincronizado', 'success');
-      await loadLeads(); // recarga activos y leads
-      renderProductsList();
-    } else {
-      showToast('❌ Error al guardar activo: ' + (data.error||''), 'error');
+function getFiltered(){
+  const sh  = document.getElementById('f-show').value;
+  const rp  = document.getElementById('f-resp').value;
+  const pp  = document.getElementById('f-ppto').value;
+  const ca  = document.getElementById('fil-ccaa').value;
+  const est = document.getElementById('f-estado').value;
+  const mes = document.getElementById('f-mes').value;
+  const q   = document.getElementById('f-q').value.toLowerCase();
+  return leads.filter(l=>{
+    if(sh && !(l.shows||[]).includes(sh)) return false;
+    if(rp && (l.resp||'Sin contactar') !== rp) return false;
+    if(pp && l.ppto !== pp) return false;
+    if(ca && (l.ccaa||'').trim() !== ca.trim()) return false;
+    if(mes){
+      if(parseInt(mes)===0){
+        // Sin fecha
+        if((l.fechas||[]).length > 0) return false;
+      } else {
+        // Specific month — must have at least one fecha in that month
+        if(!(l.fechas||[]).some(d=>{ const m=d.split('-')[1]; return parseInt(m)===parseInt(mes); })) return false;
+      }
     }
-  } catch(e) {
-    showToast('❌ Error de conexión', 'error');
-  } finally {
-    isSavingProduct = false;
-    if (btn) { btn.disabled = false; btn.textContent = 'Añadir'; }
-  }
-}
-
-async function removeProduct(id) {
-  const count = leads.filter(l => l.producto === id).length;
-  if (count > 0 && !confirm(`Este activo tiene ${count} lead(s) asociados. ¿Eliminar igualmente?`)) return;
-  if (!confirm('¿Eliminar este activo del Sheet?')) return;
-
-  try {
-    const res  = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'deleteProduct', product: { id } }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      showToast('🗑 Activo eliminado', 'success');
-      await loadLeads();
-      renderProductsList();
-    } else {
-      showToast('❌ Error al eliminar: ' + (data.error||''), 'error');
-    }
-  } catch(e) {
-    showToast('❌ Error de conexión', 'error');
-  }
-}
-
-// Mantener compatibilidad (ya no se usa localStorage para productos)
-function saveProducts() { /* sincronización ahora via Sheet */ }
-
-// ─────────────────────────────────────────────
-// CATÁLOGOS — Tipos de activo y Zonas
-// ─────────────────────────────────────────────
-const TIPOS_ACTIVO = [
-  { id:'naves',     label:'Naves / Logística',      icon:'🏭' },
-  { id:'solar',     label:'Solares / Suelo',         icon:'🌍' },
-  { id:'edificios', label:'Edificios completos',     icon:'🏛' },
-  { id:'parking',   label:'Parking / Garajes',       icon:'🅿️' },
-  { id:'traspaso',  label:'Traspasos de negocio',    icon:'🏪' },
-  { id:'hotel',     label:'Hoteles / Turístico',     icon:'🏨' },
-  { id:'corona',    label:'Activos corona metropolitana', icon:'🔁' },
-  { id:'local',     label:'Locales comerciales',     icon:'🏬' },
-  { id:'piso',      label:'Pisos sueltos',           icon:'🏠' },
-  { id:'oficina',   label:'Oficinas',                icon:'💼' },
-];
-
-const ZONAS = [
-  { id:'corona_metro', label:'Corona metropolitana',  icon:'🔁' },
-  { id:'maresme',      label:'Maresme',               icon:'🌊' },
-  { id:'valles',       label:'Vallès',                icon:'🌿' },
-  { id:'baix',         label:'Baix Llobregat',        icon:'🏞' },
-  { id:'penedes',      label:'Penedès / Garraf',      icon:'🍇' },
-  { id:'rest_cat',     label:'Resto Cataluña',        icon:'🗺' },
-  { id:'nacional',     label:'Nacional',              icon:'🇪🇸' },
-  { id:'bcn',          label:'Barcelona ciudad',      icon:'🏙' },
-];
-
-// IDs seleccionados en el modal de inversor
-let invTiposSelected = [];
-let invZonasSelected = [];
-
-// IDs activos en el panel matching
-let matchTipoActive = null;
-let matchZonaActive = null;
-
-// ─────────────────────────────────────────────
-// RENDER MULTI-CHECK (modal inversor)
-// ─────────────────────────────────────────────
-function renderMultiChecks() {
-  // Tipos de activo
-  const taCont = document.getElementById('inv-tipos-activo-selector');
-  if (taCont) {
-    taCont.innerHTML = TIPOS_ACTIVO.map(t =>
-      `<div class="mcheck ${invTiposSelected.includes(t.id)?'checked':''}"
-            onclick="toggleTipo('${t.id}',this)">
-        ${t.icon} ${t.label}
-      </div>`
-    ).join('');
-  }
-  // Zonas
-  const zCont = document.getElementById('inv-zonas-selector');
-  if (zCont) {
-    zCont.innerHTML = ZONAS.map(z =>
-      `<div class="mcheck ${invZonasSelected.includes(z.id)?'checked':''}"
-            onclick="toggleZona('${z.id}',this)">
-        ${z.icon} ${z.label}
-      </div>`
-    ).join('');
-  }
-}
-
-function toggleTipo(id, el) {
-  if (invTiposSelected.includes(id)) {
-    invTiposSelected = invTiposSelected.filter(x => x !== id);
-    el.classList.remove('checked');
-  } else {
-    invTiposSelected.push(id);
-    el.classList.add('checked');
-  }
-}
-
-function toggleZona(id, el) {
-  if (invZonasSelected.includes(id)) {
-    invZonasSelected = invZonasSelected.filter(x => x !== id);
-    el.classList.remove('checked');
-  } else {
-    invZonasSelected.push(id);
-    el.classList.add('checked');
-  }
-}
-
-// ─────────────────────────────────────────────
-// MATCHING — Render chips y selects
-// ─────────────────────────────────────────────
-function renderMatchingPage() {
-  // Chips tipo activo
-  const tChips = document.getElementById('match-tipo-chips');
-  if (tChips) {
-    tChips.innerHTML = `<div class="match-chip active" id="mchip-tipo-all" onclick="setMatchTipo(null)">Todos</div>` +
-      TIPOS_ACTIVO.map(t =>
-        `<div class="match-chip" id="mchip-tipo-${t.id}" onclick="setMatchTipo('${t.id}')">${t.icon} ${t.label}</div>`
-      ).join('');
-  }
-
-  // Chips zona
-  const zChips = document.getElementById('match-zona-chips');
-  if (zChips) {
-    zChips.innerHTML = `<div class="match-chip active" id="mchip-zona-all" onclick="setMatchZona(null)">Todas</div>` +
-      ZONAS.map(z =>
-        `<div class="match-chip" id="mchip-zona-${z.id}" onclick="setMatchZona('${z.id}')">${z.icon} ${z.label}</div>`
-      ).join('');
-  }
-
-  // Select de activos (de la app)
-  const aSel = document.getElementById('match-activo-sel');
-  if (aSel) {
-    aSel.innerHTML = '<option value="">— Selecciona un activo —</option>' +
-      products.map(p => `<option value="${p.id}">${p.icon} ${p.name}</option>`).join('') +
-      '<optgroup label="── Por tipo de activo ──">' +
-      TIPOS_ACTIVO.map(t => `<option value="tipo:${t.id}">${t.icon} ${t.label}</option>`).join('') +
-      '</optgroup>';
-  }
-
-  // Select de inversores
-  const iSel = document.getElementById('match-inv-sel');
-  if (iSel) {
-    iSel.innerHTML = '<option value="">— Selecciona un inversor —</option>' +
-      inversores.map(i => `<option value="${i.id}">${i.nombre}${i.empresa?' · '+i.empresa:''}</option>`).join('');
-  }
-
-  resetMatchResults();
-}
-
-function setMatchTipo(id) {
-  matchTipoActive = id;
-  document.querySelectorAll('[id^="mchip-tipo-"]').forEach(el => el.classList.remove('active'));
-  document.getElementById(id ? `mchip-tipo-${id}` : 'mchip-tipo-all').classList.add('active');
-  // Resetear selects y resultados
-  document.getElementById('match-activo-sel').value = '';
-  document.getElementById('match-inv-sel').value = '';
-  renderMatchByFilters();
-}
-
-function setMatchZona(id) {
-  matchZonaActive = id;
-  document.querySelectorAll('[id^="mchip-zona-"]').forEach(el => el.classList.remove('active'));
-  document.getElementById(id ? `mchip-zona-${id}` : 'mchip-zona-all').classList.add('active');
-  document.getElementById('match-activo-sel').value = '';
-  document.getElementById('match-inv-sel').value = '';
-  renderMatchByFilters();
-}
-
-function resetMatchResults() {
-  document.getElementById('match-results-area').innerHTML =
-    '<div class="match-empty">Selecciona un activo o un inversor para ver los matches.</div>';
-}
-
-// ─────────────────────────────────────────────
-// MATCHING — Lógica
-// ─────────────────────────────────────────────
-
-// Inversor encaja con un tipo de activo
-function invMatchesTipo(inv, tipoId) {
-  const tipos = parseTipos(inv.tipos_activo);
-  return tipos.includes(tipoId);
-}
-
-// Inversor encaja con una zona
-function invMatchesZona(inv, zonaId) {
-  const zonas = parseZonas(inv.zonas_geo);
-  return zonas.includes(zonaId);
-}
-
-function parseTipos(raw) { try { return JSON.parse(raw || '[]'); } catch(e) { return []; } }
-function parseZonas(raw) { try { return JSON.parse(raw || '[]'); } catch(e) { return []; } }
-
-// Filtro general por chips activos
-function renderMatchByFilters() {
-  let matched = inversores;
-  if (matchTipoActive) matched = matched.filter(i => invMatchesTipo(i, matchTipoActive));
-  if (matchZonaActive) matched = matched.filter(i => invMatchesZona(i, matchZonaActive));
-
-  if (!matchTipoActive && !matchZonaActive) { resetMatchResults(); return; }
-
-  const tipoLabel = matchTipoActive ? TIPOS_ACTIVO.find(t=>t.id===matchTipoActive)?.label : null;
-  const zonaLabel = matchZonaActive ? ZONAS.find(z=>z.id===matchZonaActive)?.label : null;
-  const filtroDesc = [tipoLabel, zonaLabel].filter(Boolean).join(' · ');
-
-  renderMatchResults(matched, `Inversores interesados en: ${filtroDesc}`, 'inversor');
-}
-
-// Desde selector de activo
-function matchDesdeActivo() {
-  const val = document.getElementById('match-activo-sel').value;
-  if (!val) { resetMatchResults(); return; }
-  document.getElementById('match-inv-sel').value = '';
-
-  let matched, titulo;
-
-  if (val.startsWith('tipo:')) {
-    const tipoId = val.replace('tipo:', '');
-    const tipo   = TIPOS_ACTIVO.find(t => t.id === tipoId);
-    matched = inversores.filter(i => {
-      const tipos = parseTipos(i.tipos_activo);
-      const zonas = parseZonas(i.zonas_geo);
-      if (!tipos.includes(tipoId)) return false;
-      if (matchZonaActive && !zonas.includes(matchZonaActive)) return false;
-      return true;
-    });
-    titulo = `Inversores interesados en: ${tipo?.icon} ${tipo?.label}`;
-  } else {
-    // Activo concreto de la app — matcheamos por nombre del activo en zonas/motivacion
-    const prod = products.find(p => p.id === val);
-    matched = inversores.filter(i => {
-      const tipos = parseTipos(i.tipos_activo);
-      const zonas = parseZonas(i.zonas_geo);
-      const hayTipo = tipos.length === 0 || tipos.some(t => {
-        if (prod?.name?.toLowerCase().includes('solar') && t === 'solar') return true;
-        if (prod?.name?.toLowerCase().includes('local') && t === 'local') return true;
-        if (prod?.name?.toLowerCase().includes('nave') && t === 'naves') return true;
-        if (prod?.name?.toLowerCase().includes('parking') && t === 'parking') return true;
-        if (prod?.name?.toLowerCase().includes('hotel') && t === 'hotel') return true;
-        if (prod?.name?.toLowerCase().includes('edificio') && t === 'edificios') return true;
-        return true; // si no hay pista del nombre, incluir
-      });
-      if (matchZonaActive && !zonas.includes(matchZonaActive)) return false;
-      return hayTipo;
-    });
-    titulo = `Inversores que pueden interesarse en: ${prod?.icon} ${prod?.name}`;
-  }
-
-  renderMatchResults(matched, titulo, 'inversor');
-}
-
-// Desde selector de inversor
-function matchDesdeInversor() {
-  const invId = document.getElementById('match-inv-sel').value;
-  if (!invId) { resetMatchResults(); return; }
-  document.getElementById('match-activo-sel').value = '';
-
-  const inv    = inversores.find(i => i.id === invId);
-  if (!inv) return;
-
-  const tipos  = parseTipos(inv.tipos_activo);
-  const zonas  = parseZonas(inv.zonas_geo);
-
-  // Activos de la app que encajan
-  const activosMatch = products.filter(p => {
-    if (tipos.length === 0) return true;
-    return tipos.some(t => {
-      if (t==='solar'    && p.name.toLowerCase().includes('solar'))   return true;
-      if (t==='local'    && p.name.toLowerCase().includes('local'))   return true;
-      if (t==='naves'    && p.name.toLowerCase().includes('nave'))    return true;
-      if (t==='parking'  && p.name.toLowerCase().includes('parking')) return true;
-      if (t==='hotel'    && p.name.toLowerCase().includes('hotel'))   return true;
-      if (t==='edificios'&& p.name.toLowerCase().includes('edificio'))return true;
-      return false;
-    });
-  });
-
-  // Tipos de activo que busca como tarjetas informativas
-  const perfil = getPerfil(inv.perfil);
-  const tiposLabels = tipos.map(t => TIPOS_ACTIVO.find(x=>x.id===t)).filter(Boolean);
-  const zonasLabels = zonas.map(z => ZONAS.find(x=>x.id===z)).filter(Boolean);
-
-  const area = document.getElementById('match-results-area');
-  area.innerHTML = `
-    <div class="match-results-title">
-      Perfil de búsqueda de <strong style="color:var(--text)">${inv.nombre}</strong>
-    </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px">
-      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start">
-        <div style="flex:1;min-width:200px">
-          <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Tipos de activo</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px">
-            ${tiposLabels.length ? tiposLabels.map(t=>`<span class="match-tag">${t.icon} ${t.label}</span>`).join('') : '<span style="color:var(--muted);font-size:0.78rem">Sin especificar</span>'}
-          </div>
-        </div>
-        <div style="flex:1;min-width:200px">
-          <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Zonas de interés</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px">
-            ${zonasLabels.length ? zonasLabels.map(z=>`<span class="match-tag zona">${z.icon} ${z.label}</span>`).join('') : '<span style="color:var(--muted);font-size:0.78rem">Sin especificar</span>'}
-          </div>
-        </div>
-        <div>
-          <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Capital · Rentabilidad</div>
-          <div style="font-size:0.82rem;font-weight:600">💰 ${inv.capital||'—'}</div>
-          <div style="font-size:0.78rem;color:var(--muted2)">Rent. mín: ${inv.rentabilidad||'—'}</div>
-        </div>
-      </div>
-      ${inv.motivacion ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted2)">${inv.motivacion}</div>` : ''}
-    </div>
-    <div class="match-results-title">
-      Activos actuales que pueden encajar
-      <span class="match-count">${activosMatch.length}</span>
-    </div>
-    ${activosMatch.length ? `<div class="match-grid">${activosMatch.map(p => `
-      <div class="match-card" onclick="switchTab('leads');setTimeout(()=>{document.getElementById('filter-producto').value='${p.id}';renderAll();},200)">
-        <div class="match-card-name">${p.icon} ${p.name}</div>
-        <div class="match-card-sub">Ver leads asociados a este activo</div>
-        <div class="match-card-bottom">
-          <span>${leads.filter(l=>l.producto===p.id).length} leads en pipeline</span>
-          <span style="color:var(--accent)">Ver leads →</span>
-        </div>
-      </div>`).join('')}</div>` :
-      `<div class="match-empty">Ningún activo actual encaja con sus preferencias.<br>Quizás es una oportunidad de captación.</div>`}
-  `;
-}
-
-function renderMatchResults(matched, titulo, tipo) {
-  const area = document.getElementById('match-results-area');
-  area.innerHTML = `
-    <div class="match-results-title">
-      ${titulo} <span class="match-count">${matched.length}</span>
-    </div>
-    ${matched.length === 0 ?
-      `<div class="match-empty">Ningún inversor encaja con este criterio todavía.</div>` :
-      `<div class="match-grid">${matched.map(inv => {
-        const perfil  = getPerfil(inv.perfil);
-        const tipos   = parseTipos(inv.tipos_activo).map(t=>TIPOS_ACTIVO.find(x=>x.id===t)).filter(Boolean);
-        const zonas   = parseZonas(inv.zonas_geo).map(z=>ZONAS.find(x=>x.id===z)).filter(Boolean);
-        const prioCls = PRIORIDAD_CLS[inv.prioridad]||'bp-media';
-        return `<div class="match-card" onclick="switchTab('inversores');setTimeout(()=>openInvFicha('${inv.id}'),200)">
-          <div class="match-card-name">${inv.nombre} <span class="badge-prioridad ${prioCls}" style="font-size:0.62rem">${inv.prioridad}</span></div>
-          <div class="match-card-sub">${inv.empresa||perfil.label} · 💰 ${inv.capital}</div>
-          <div class="match-card-tags">
-            ${tipos.slice(0,3).map(t=>`<span class="match-tag">${t.icon} ${t.label}</span>`).join('')}
-            ${zonas.slice(0,2).map(z=>`<span class="match-tag zona">${z.icon} ${z.label}</span>`).join('')}
-          </div>
-          ${inv.motivacion ? `<div class="match-card-sub" style="font-size:0.72rem">${inv.motivacion.substring(0,80)}${inv.motivacion.length>80?'…':''}</div>` : ''}
-          <div class="match-card-bottom">
-            <span>${inv.agente||'—'}</span>
-            <span style="color:#c9a84c">Ver ficha →</span>
-          </div>
-        </div>`;
-      }).join('')}</div>`
-    }`;
-}
-
-// ─────────────────────────────────────────────
-// TAB NAVIGATION
-// ─────────────────────────────────────────────
-function switchTab(tab) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('page-' + tab).classList.add('active');
-  document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'inversores') renderInversores();
-  if (tab === 'matching')   renderMatchingPage();
-}
-
-// ─────────────────────────────────────────────
-// INVERSORES — STATE
-// ─────────────────────────────────────────────
-let inversores     = [];
-let editInvId      = null;
-let selectedPerfil = null;
-let isSavingInv    = false;
-
-const PERFILES = [
-  { id:'Patrimonialista',    label:'Patrimonialista',    icon:'🏛', cls:'bp-patrimonialista', cardCls:'perfil-patrimonialista' },
-  { id:'Inversor activo',    label:'Inversor activo',    icon:'📈', cls:'bp-inversor',        cardCls:'perfil-inversor' },
-  { id:'Uso propio',         label:'Uso propio',         icon:'🏠', cls:'bp-uso-propio',      cardCls:'perfil-uso-propio' },
-  { id:'Traspaso / negocio', label:'Traspaso / negocio', icon:'🏪', cls:'bp-traspaso',        cardCls:'perfil-traspaso' },
-  { id:'Family office',      label:'Family office',      icon:'💎', cls:'bp-family',          cardCls:'perfil-family' },
-  { id:'Oportunista',        label:'Oportunista',        icon:'⚡', cls:'bp-oportunista',     cardCls:'perfil-oportunista' },
-];
-
-const PRIORIDAD_CLS = { 'Alta':'bp-alta', 'Media':'bp-media', 'Baja':'bp-baja' };
-
-function getPerfil(id) { return PERFILES.find(p => p.id === id) || { label: id, icon:'👤', cls:'', cardCls:'' }; }
-
-// ─────────────────────────────────────────────
-// INVERSORES — LOAD / SAVE / DELETE
-// ─────────────────────────────────────────────
-async function loadInversores() {
-  if (!scriptUrl) return;
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 12000);
-  try {
-    const res  = await fetch(scriptUrl + '?action=getInversores', { method:'GET', signal: controller.signal });
-    clearTimeout(timeoutId);
-    const data = await res.json();
-    inversores = (data.inversores || []).map(inv => ({
-      id:           inv.id           || '',
-      nombre:       inv.nombre       || '',
-      telefono:     inv.telefono     || '',
-      email:        inv.email        || '',
-      empresa:      inv.empresa      || '',
-      origen:       inv.origen       || '',
-      perfil:       inv.perfil       || '',
-      capital:      inv.capital      || '',
-      prioridad:    inv.prioridad    || 'Media',
-      estado:       inv.estado       || 'Nuevo contacto',
-      agente:       inv.agente       || '',
-      tipos_activo: inv.tipos_activo || '[]',
-      zonas_geo:    inv.zonas_geo    || '[]',
-      zonas:        inv.zonas        || '',
-      rentabilidad: inv.rentabilidad || '',
-      plazo:        inv.plazo        || '',
-      motivacion:   inv.motivacion   || '',
-      objeciones:   inv.objeciones   || '',
-      notas:        inv.notas        || '',
-    }));
-    renderInversores();
-  } catch(e) {
-    clearTimeout(timeoutId);
-  }
-}
-
-async function saveInversor() {
-  if (isSavingInv) return;
-  const nombre = document.getElementById('inv-nombre').value.trim();
-  if (!nombre)         { showToast('⚠️ El nombre es obligatorio', 'error'); return; }
-  if (!selectedPerfil) { showToast('⚠️ Selecciona un perfil', 'error'); return; }
-
-  const inv = {
-    id:           editInvId || ('inv_' + Date.now()),
-    nombre,
-    telefono:     document.getElementById('inv-telefono').value.trim(),
-    email:        document.getElementById('inv-email').value.trim(),
-    empresa:      document.getElementById('inv-empresa').value.trim(),
-    origen:       document.getElementById('inv-origen').value,
-    perfil:       selectedPerfil,
-    capital:      document.getElementById('inv-capital').value,
-    prioridad:    document.getElementById('inv-prioridad').value,
-    estado:       document.getElementById('inv-estado').value,
-    agente:       document.getElementById('inv-agente').value,
-    tipos_activo: JSON.stringify(invTiposSelected),
-    zonas_geo:    JSON.stringify(invZonasSelected),
-    zonas:        document.getElementById('inv-zonas').value.trim(),
-    rentabilidad: document.getElementById('inv-rentabilidad').value.trim(),
-    plazo:        document.getElementById('inv-plazo').value,
-    motivacion:   document.getElementById('inv-motivacion').value.trim(),
-    objeciones:   document.getElementById('inv-objeciones').value.trim(),
-    notas:        document.getElementById('inv-notas').value.trim(),
-  };
-
-  isSavingInv = true;
-  const btn = document.getElementById('inv-btn-save');
-  btn.disabled = true; btn.textContent = 'Guardando…';
-
-  const controller = new AbortController();
-  const timeoutId  = setTimeout(() => controller.abort(), 12000);
-
-  try {
-    const action = editInvId ? 'updateInversor' : 'addInversor';
-    const res = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action, inversor: inv }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    const data = await res.json();
-    if (data.ok) {
-      showToast(editInvId ? '✅ Inversor actualizado' : '✅ Inversor añadido', 'success');
-      closeInvModal();
-      await loadInversores();
-    } else {
-      showToast('❌ Error: ' + (data.error||''), 'error');
-    }
-  } catch(e) {
-    clearTimeout(timeoutId);
-    showToast(e.name === 'AbortError' ? '⏱ Tiempo de espera agotado' : '❌ Error de conexión', 'error');
-  } finally {
-    isSavingInv = false; btn.disabled = false; btn.textContent = 'Guardar inversor';
-  }
-}
-
-async function deleteInversor() {
-  if (!editInvId || !confirm('¿Eliminar este inversor?')) return;
-  try {
-    const res  = await fetch(scriptUrl, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'deleteInversor', inversor: { id: editInvId } }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      showToast('🗑 Inversor eliminado', 'success');
-      closeInvModal();
-      await loadInversores();
-    } else {
-      showToast('❌ ' + (data.error||''), 'error');
-    }
-  } catch(e) {
-    showToast('❌ Error de conexión', 'error');
-  }
-}
-
-// ─────────────────────────────────────────────
-// INVERSORES — RENDER
-// ─────────────────────────────────────────────
-function getInvFiltered() {
-  const perfil    = document.getElementById('inv-filter-perfil').value;
-  const capital   = document.getElementById('inv-filter-capital').value;
-  const prioridad = document.getElementById('inv-filter-prioridad').value;
-  const estado    = document.getElementById('inv-filter-estado').value;
-  const search    = document.getElementById('inv-filter-search').value.toLowerCase();
-  return inversores.filter(inv => {
-    if (perfil    && inv.perfil    !== perfil)    return false;
-    if (capital   && inv.capital   !== capital)   return false;
-    if (prioridad && inv.prioridad !== prioridad) return false;
-    if (estado    && inv.estado    !== estado)    return false;
-    if (search    && !inv.nombre.toLowerCase().includes(search) && !inv.empresa.toLowerCase().includes(search)) return false;
+    if(est && (l.estado||'') !== est) return false;
+    if(q && !l.nombre.toLowerCase().includes(q) && !(l.municipio||'').toLowerCase().includes(q)) return false;
     return true;
   });
 }
 
-function renderInversores() {
-  const filtered = getInvFiltered();
-
+function render(){
+  const f = getFiltered();
   // KPIs
-  document.getElementById('inv-kpi-total').textContent       = inversores.length;
-  document.getElementById('inv-kpi-alta').textContent        = inversores.filter(i=>i.prioridad==='Alta').length;
-  document.getElementById('inv-kpi-capital').textContent     = inversores.filter(i=>i.capital==='+1M'||i.capital==='+5M').length;
-  document.getElementById('inv-kpi-negociacion').textContent = inversores.filter(i=>i.estado==='En negociación').length;
+  renderMonthBreakdown();
+  renderBreakdown();
+  document.getElementById('k-total').textContent   = f.length;
+  document.getElementById('k-acep').textContent    = f.filter(l=>l.ppto==='Aceptado').length;
+  document.getElementById('k-sinresp').textContent = f.filter(l=>l.resp==='Sin contactar'||l.resp==='').length;
+  document.getElementById('k-pte').textContent     = f.filter(l=>l.ppto==='Enviado').length;
 
-  const grid = document.getElementById('inv-grid');
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div class="inv-empty" style="grid-column:1/-1">
-      <div class="inv-empty-icon">💼</div>
-      <div class="inv-empty-text">${inversores.length === 0 ? 'Sin inversores todavía.<br>Pulsa «+ Nuevo inversor» para añadir el primero.' : 'Sin resultados para los filtros aplicados.'}</div>
-    </div>`;
+  renderTable(f);
+  const list = document.getElementById('lead-list');
+  if(!f.length){
+    list.innerHTML = `<div class="empty">${leads.length?'Sin resultados para estos filtros.':'Pulsa + para añadir tu primer lead.'}</div>`;
     return;
   }
+  renderTable(f);
+  list.innerHTML = f.map(l=>{
+    const noResp = !l.resp || l.resp==='Sin contactar';
+    const pFecha = (l.fechas||[])[0];
+    const moreF  = (l.fechas||[]).length>1 ? ` +${l.fechas.length-1}` : '';
+    const pShow  = (l.shows||[])[0];
+    const moreS  = (l.shows||[]).length>1 ? ` +${l.shows.length-1}` : '';
+    const allShows = (l.shows||[]).map(id=>{ const s=getShows().find(x=>x.id===id); return s?`${s.icon} ${s.name}`:id; });
+    const accentColor = RESP_ACCENT[l.resp||'Sin contactar']||'#6b7280';
+    const allFechas = (l.fechas||[]).map(d=>`📅 ${fmtDate(d)}`);
+    return `<div class="lead-card" onclick="openDetail('${l.id}')">
+      <div class="lead-card-accent" style="background:${accentColor}"></div>
+      <div class="lead-card-body">
 
-  grid.innerHTML = filtered.map(inv => {
-    const perfil    = getPerfil(inv.perfil);
-    const prioCls   = PRIORIDAD_CLS[inv.prioridad] || 'bp-media';
-    const avatarCls = inv.agente === 'Fernando' ? 'avatar-f' : 'avatar-g';
-    const initials  = inv.agente === 'Fernando' ? 'FB' : 'GR';
-    return `<div class="inv-card ${perfil.cardCls}" onclick="openInvFicha('${inv.id}')">
-      <div class="inv-card-top">
-        <div style="min-width:0;flex:1">
-          <div class="inv-card-name">${inv.nombre}</div>
-          <div class="inv-card-contact">${inv.empresa ? inv.empresa + ' · ' : ''}${inv.telefono||inv.email||''}</div>
+        <!-- Nombre + localidad -->
+        <div style="margin-bottom:10px">
+          <div class="lead-name">${l.nombre||'Sin nombre'}</div>
+          ${l.municipio?`<div class="lead-loc" style="margin-top:3px">${l.municipio}</div>`:''}
+          ${l.ccaa?`<div style="font-size:.65rem;color:var(--muted2);margin-top:2px">${l.ccaa}</div>`:''}
         </div>
-        <span class="badge-prioridad ${prioCls}">${inv.prioridad}</span>
-      </div>
-      <div class="inv-badges">
-        <span class="badge-perfil ${perfil.cls}">${perfil.icon} ${perfil.label}</span>
-        <span class="badge-capital">💰 ${inv.capital}</span>
-        <span class="badge" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border);font-size:0.68rem">${inv.estado}</span>
-      </div>
-      ${inv.motivacion ? `<div class="inv-card-intereses">${inv.motivacion}</div>` : ''}
-      <div class="inv-card-bottom">
-        <span class="agente-chip"><span class="avatar ${avatarCls}" style="width:20px;height:20px;font-size:0.55rem">${initials}</span>${inv.agente||'—'}</span>
-        <span>⏱ ${inv.plazo||'Sin definir'}</span>
-        <span style="color:var(--accent);font-size:0.72rem">Ver ficha →</span>
+
+        <!-- Fila 1: Espectáculos + Respuesta -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px">
+          ${allShows.map(n=>badge(n,'b-gold')).join('')}
+          ${badge(l.resp||'Sin contactar', RESP_CLS[l.resp||'Sin contactar']||'b-gray')}
+        </div>
+        <!-- Fila 2: Presupuesto + Estado + Tipo -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+          ${badge(l.ppto||'Sin enviar', PPTO_CLS[l.ppto||'Sin enviar']||'b-gray')}
+          ${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : ''}
+          ${l.tipo ? badge(l.tipo,'b-gray') : ''}
+        </div>
+
+        <!-- Fechas -->
+        ${allFechas.length ? `<div style="padding-top:8px;border-top:1px solid var(--border)">
+          <div class="lead-card-dates">${allFechas.join('<br>')}</div>
+        </div>` : ''}
+
       </div>
     </div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────────────
-// FICHA INVERSOR
-// ─────────────────────────────────────────────
-let fichaInvId = null;
+// ══════════════════════════════════════════════════════
+// PANEL
+// ══════════════════════════════════════════════════════
+function openPanel(title, bodyHTML){
+  document.getElementById('panel-title').textContent = title;
+  document.getElementById('panel-body').innerHTML = bodyHTML;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+}
+function closePanel(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+  editId = null; selShows = []; selDates = [];
+}
 
-function openInvFicha(id) {
-  const inv = inversores.find(i => i.id === id);
-  if (!inv) return;
-  fichaInvId = id;
-  const perfil    = getPerfil(inv.perfil);
-  const prioCls   = PRIORIDAD_CLS[inv.prioridad] || 'bp-media';
-  const avatarCls = inv.agente === 'Fernando' ? 'avatar-f' : 'avatar-g';
-  const initials  = inv.agente === 'Fernando' ? 'FB' : 'GR';
+// ══════════════════════════════════════════════════════
+// FORM
+// ══════════════════════════════════════════════════════
+function openForm(id){
+  editId = id;
+  const l = id ? leads.find(x=>x.id===id) : null;
+  if(l){ selShows=[...(l.shows||[])]; selDates=[...(l.fechas||[])]; }
+  else { selShows=[]; selDates=[]; }
+  openPanel(id ? 'Editar lead' : 'Nuevo lead', buildFormHTML(l));
+}
 
-  document.getElementById('inv-ficha-nombre').textContent = inv.nombre;
-  document.getElementById('inv-ficha-badges').innerHTML =
-    `<span class="badge-perfil ${perfil.cls}">${perfil.icon} ${perfil.label}</span>
-     <span class="badge-capital">💰 ${inv.capital}</span>
-     <span class="badge-prioridad ${prioCls}">${inv.prioridad}</span>
-     <span class="badge" style="background:var(--surface2);color:var(--muted2);border:1px solid var(--border);font-size:0.68rem">${inv.estado}</span>`;
+function buildFormHTML(l){
+  const shows = getShows();
+  const TIPOS = ['Festival / Ayuntamiento','Cabalgata de Reyes','Evento corporativo','Evento privado','Feria','Otro'];
+  const CANALES = ['Meta','Email','Web','Otro'];
+  const RESPS = [['Sin contactar','b-gray'],['Contactado','b-amber sel'],['Respondió ✓','resp-ok sel']];
+  const PPTOS = ['Sin enviar','Enviado','Aceptado','Rechazado','Sin respuesta'];
+  const CCAAS = ['Andalucía','Aragón','Asturias','Baleares','Canarias','Cantabria','Castilla-La Mancha','Castilla y León','Cataluña','Comunidad de Madrid','Comunidad Valenciana','Extremadura','Galicia','La Rioja','Navarra','País Vasco','Región de Murcia'];
 
-  const field = (label, value, full=false) => value ? `
-    <div class="inv-ficha-field ${full?'full':''}">
-      <div class="inv-ficha-field-label">${label}</div>
-      <div class="inv-ficha-field-value">${value}</div>
-    </div>` : '';
-
-  const fieldLink = (label, value, href) => value ? `
-    <div class="inv-ficha-field">
-      <div class="inv-ficha-field-label">${label}</div>
-      <div class="inv-ficha-field-value"><a href="${href}" style="color:var(--accent);text-decoration:none" onclick="event.stopPropagation()">${value}</a></div>
-    </div>` : '';
-
-  let body = `
-    <div class="inv-ficha-section">
-      <div class="inv-ficha-title">Datos de contacto</div>
-      <div class="inv-ficha-grid">
-        ${fieldLink('Teléfono', inv.telefono, 'tel:'+inv.telefono)}
-        ${fieldLink('Email', inv.email, 'mailto:'+inv.email)}
-        ${field('Empresa / Sociedad', inv.empresa)}
-        ${field('Origen', inv.origen)}
-      </div>
+  return `
+  <div class="form-group">
+    <label>Nombre *</label>
+    <input id="f-nombre" type="text" value="${e(l?.nombre)}" placeholder="Ana García" maxlength="80">
+  </div>
+  <div class="form-group">
+    <label>Respuesta del lead</label>
+    <div class="seg">
+      ${['Sin contactar','Contactado','Respondió ✓'].map(r=>`
+        <button class="seg-btn ${(l?.resp||'Sin contactar')===r?'sel '+(r==='Respondió ✓'?'resp-ok':r==='Contactado'?'resp-amb':''):''}${r==='Respondió ✓'?'resp-ok':''}"
+          onclick="segSel(this,'resp')">${r}</button>`).join('')}
     </div>
-    <div class="inv-ficha-section">
-      <div class="inv-ficha-title">Perfil inversor</div>
-      <div class="inv-ficha-grid">
-        ${field('Rango de capital', inv.capital)}
-        ${field('Plazo de decisión', inv.plazo)}
-        ${field('Rentabilidad mínima', inv.rentabilidad)}
-        ${field('Notas de interés', inv.zonas)}
-      </div>
-      ${parseTipos(inv.tipos_activo).length ? `
-      <div style="margin-top:12px">
-        <div class="inv-ficha-field-label" style="margin-bottom:6px">Tipos de activo buscados</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          ${parseTipos(inv.tipos_activo).map(t=>{const ta=TIPOS_ACTIVO.find(x=>x.id===t);return ta?`<span class="match-tag">${ta.icon} ${ta.label}</span>`:''}).join('')}
-        </div>
-      </div>` : ''}
-      ${parseZonas(inv.zonas_geo).length ? `
-      <div style="margin-top:10px">
-        <div class="inv-ficha-field-label" style="margin-bottom:6px">Zonas de interés</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          ${parseZonas(inv.zonas_geo).map(z=>{const za=ZONAS.find(x=>x.id===z);return za?`<span class="match-tag zona">${za.icon} ${za.label}</span>`:''}).join('')}
-        </div>
-      </div>` : ''}
-    </div>`;
+  </div>
+  <div class="form-group">
+    <label>Teléfono</label>
+    <input id="f-tel" type="tel" value="${e(l?.telefono)}" placeholder="612 345 678" maxlength="20">
+  </div>
+  <div class="form-group">
+    <label>Email</label>
+    <input id="f-email" type="email" value="${e(l?.email)}" placeholder="ana@festival.com" maxlength="80">
+  </div>
+<div style="display:none">%%TIPO_PLACEHOLDER%%</div>
+  <div class="form-group">
+    <label>Canal</label>
+    <div class="seg">
+      ${CANALES.map(c=>`<button class="seg-btn ${(l?.canal||'Meta')===c?'sel':''}" onclick="segSel(this,'canal')">${c}</button>`).join('')}
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Estado</label>
+    <div class="seg" style="flex-wrap:wrap">
+      ${ESTADOS.map(s=>`<button class="seg-btn ${(l?.estado||'')===s?'sel':''}" onclick="segSel(this,'estado')">${s}</button>`).join('')}
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Espectáculos</label>
+    <div class="shows-manage">
+      <span style="font-size:.7rem;color:var(--muted)">Selecciona uno o más</span>
+      <button onclick="addShow()">+ Añadir show</button>
+    </div>
+    <div class="show-grid" id="show-grid">${buildShowGrid()}</div>
+  </div>
+  <div class="form-group">
+    <label>Fechas del espectáculo</label>
+    <div class="date-tags" id="date-tags">${buildDateTags()}</div>
+    <div class="date-row">
+      <input type="date" id="date-inp">
+      <button class="btn-ghost" onclick="addDate()">+ Añadir</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Presupuesto</label>
+    <div class="seg" style="flex-wrap:wrap">
+      ${PPTOS.map(p=>`<button class="seg-btn ${(l?.ppto||'Sin enviar')===p?'sel':''}" onclick="segSel(this,'ppto')">${p}</button>`).join('')}
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Localidad</label>
+    <div class="loc-row">
+      <select id="ccaa-sel">
+        <option value="">Comunidad Autónoma</option>
+        ${CCAAS.map(ca=>`<option value="${ca}" ${l?.ccaa===ca?'selected':''}>${ca}</option>`).join('')}
+      </select>
+      <input id="f-mun" type="text" value="${e(l?.municipio)}" placeholder="Municipio" maxlength="60">
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Tipo de evento / cliente</label>
+    <select id="f-tipo">
+      <option value="">— Selecciona —</option>
+      ${TIPOS.map(t=>`<option ${l?.tipo===t?'selected':''}>${t}</option>`).join('')}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>Notas</label>
+    <textarea id="f-notas" placeholder="Detalles del evento, observaciones…" maxlength="600">${e(l?.notas)}</textarea>
+  </div>
+  <div class="form-actions">
+    ${l ? `<button class="btn-del" onclick="deleteLead()">🗑 Eliminar</button>` : ''}
+    <button class="btn-ghost" onclick="closePanel()">Cancelar</button>
+    <button class="btn btn-gold" style="flex:1" id="btn-save" onclick="saveLead()">Guardar</button>
+  </div>`;
+}
 
-  if (inv.motivacion || inv.objeciones) {
-    body += `<div class="inv-ficha-section">
-      <div class="inv-ficha-title">Cualificación</div>
-      <div class="inv-ficha-grid">
-        ${inv.motivacion ? `<div class="inv-ficha-field full"><div class="inv-ficha-field-label">Motivación / qué busca</div><div class="inv-ficha-field-value">${inv.motivacion}</div></div>` : ''}
-        ${inv.objeciones ? `<div class="inv-ficha-field full"><div class="inv-ficha-field-label">Objeciones / restricciones</div><div class="inv-ficha-field-value">${inv.objeciones}</div></div>` : ''}
-      </div>
-    </div>`;
+function e(v){ return (v||'').toString().replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function segSel(btn, group){
+  btn.closest('.seg,.form-group').querySelectorAll('.seg-btn').forEach(b=>{
+    b.classList.remove('sel','resp-ok','resp-amb');
+  });
+  btn.classList.add('sel');
+  if(group==='resp'){
+    if(btn.textContent==='Respondió ✓') btn.classList.add('resp-ok');
+    if(btn.textContent==='Contactado') btn.classList.add('resp-amb');
   }
+}
+function getSegVal(group){
+  const map={resp:'resp',canal:'canal',ppto:'ppto'};
+  // find active btn in form
+  const btns = document.getElementById('panel-body').querySelectorAll('.seg-btn.sel');
+  for(const b of btns){
+    const par = b.closest('.form-group');
+    if(!par) continue;
+    const lbl = par.querySelector('label')?.textContent||'';
+    if(group==='resp' && lbl.includes('Respuesta')) return b.textContent.trim();
+    if(group==='canal' && lbl.includes('Canal')) return b.textContent.trim();
+    if(group==='ppto' && lbl.includes('Presupuesto')) return b.textContent.trim();
+    if(group==='estado' && lbl.includes('Estado')) return b.textContent.trim();
+  }
+  return '';
+}
 
-  body += `<div class="inv-ficha-section">
-    <div class="inv-ficha-title">Gestión interna</div>
-    <div class="inv-ficha-grid">
-      <div class="inv-ficha-field">
-        <div class="inv-ficha-field-label">Agente</div>
-        <div class="inv-ficha-field-value"><span class="agente-chip"><span class="avatar ${avatarCls}" style="width:20px;height:20px;font-size:0.55rem">${initials}</span>${inv.agente||'—'}</span></div>
-      </div>
-      ${field('Estado', inv.estado)}
-      ${inv.notas ? `<div class="inv-ficha-field full"><div class="inv-ficha-field-label">Notas internas</div><div class="inv-ficha-field-value">${inv.notas}</div></div>` : ''}
-    </div>
+function buildShowGrid(){
+  return getShows().map(s=>`
+    <div class="show-opt ${selShows.includes(s.id)?'sel':''}" onclick="toggleShow('${s.id}')">
+      <div class="chk">${selShows.includes(s.id)?'✓':''}</div>
+      <span>${s.icon} ${s.name}</span>
+    </div>`).join('');
+}
+function toggleShow(id){
+  selShows = selShows.includes(id) ? selShows.filter(x=>x!==id) : [...selShows,id];
+  const g = document.getElementById('show-grid');
+  if(g) g.innerHTML = buildShowGrid();
+}
+
+function buildDateTags(){
+  return selDates.map((d,i)=>
+    `<span class="date-tag">📅 ${fmtDate(d)}<span class="date-rm" onclick="removeDate(${i})">✕</span></span>`
+  ).join('');
+}
+function addDate(){
+  const v = document.getElementById('date-inp').value;
+  if(!v){ toast('Selecciona una fecha','err'); return; }
+  if(selDates.includes(v)){ toast('Ya está añadida','err'); return; }
+  selDates = [...selDates, v].sort();
+  document.getElementById('date-inp').value = '';
+  const dt = document.getElementById('date-tags');
+  if(dt) dt.innerHTML = buildDateTags();
+}
+function removeDate(i){
+  selDates.splice(i,1);
+  const dt = document.getElementById('date-tags');
+  if(dt) dt.innerHTML = buildDateTags();
+}
+
+async function addShow(){
+  const name = prompt('Nombre del nuevo espectáculo:');
+  if(!name || !name.trim()) return;
+  const shows = getShows();
+  const id = 'custom_'+Date.now();
+  const newShow = {id, name:name.trim(), icon:'⭐'};
+  shows.push(newShow);
+  saveShows(shows);
+  buildShowFilter();
+  const g = document.getElementById('show-grid');
+  if(g) g.innerHTML = buildShowGrid();
+  // Sync to server
+  if(scriptUrl){
+    try{
+      await fetch(scriptUrl+'?action=saveShow&d='+encodeURIComponent(JSON.stringify(newShow)),{redirect:'follow'});
+      toast('✅ Espectáculo guardado y sincronizado','ok');
+    }catch(e){ toast('✅ Guardado local — sin sync','err'); }
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SAVE / DELETE
+// ══════════════════════════════════════════════════════
+async function saveLead(){
+  const nombre = document.getElementById('f-nombre')?.value.trim();
+  if(!nombre){ toast('El nombre es obligatorio','err'); return; }
+  const btn = document.getElementById('btn-save');
+  if(btn){ btn.disabled=true; btn.textContent='Guardando…'; }
+
+  const _ccaaEl = document.getElementById('ccaa-sel');
+  const ccaaVal = _ccaaEl ? _ccaaEl.value.trim() : '';
+  const now = new Date().toISOString();
+  const lead = {
+    id: editId || 'l'+Date.now(),
+    nombre,
+    telefono: document.getElementById('f-tel')?.value.trim() || '',
+    email:    document.getElementById('f-email')?.value.trim() || '',
+    tipo:     document.getElementById('f-tipo')?.value || '',
+    canal:    getSegVal('canal') || 'Meta',
+    resp:     getSegVal('resp')  || 'Sin contactar',
+    ppto:     getSegVal('ppto')  || 'Sin enviar',
+    ccaa:     ccaaVal,
+    municipio:document.getElementById('f-mun')?.value.trim() || '',
+    shows:    [...selShows],
+    fechas:   [...selDates],
+    estado:   getSegVal('estado') || '',
+    notas:    document.getElementById('f-notas')?.value.trim() || '',
+    updatedAt: now,
+    createdAt: editId ? (leads.find(l=>l.id===editId)||{}).createdAt||now : now,
+  };
+
+  // Optimistic
+  if(editId){ const i=leads.findIndex(l=>l.id===editId); if(i>=0) leads[i]=lead; }
+  else leads.unshift(lead);
+  saveCache(); closePanel(); render();
+
+  const ok = await pushLead(lead);
+  if(ok) { toast('✅ Guardado','ok'); if(scriptUrl) setSyncDot('ok'); }
+  else toast('⚠️ Guardado local · sin sync','err');
+}
+
+async function deleteLead(){
+  if(!editId || !confirm('¿Eliminar este lead?')) return;
+  const id = editId;
+  leads = leads.filter(l=>l.id!==id);
+  saveCache(); closePanel(); render();
+  await pushDelete(id);
+  toast('🗑 Lead eliminado','ok');
+}
+
+// ══════════════════════════════════════════════════════
+// DETAIL
+// ══════════════════════════════════════════════════════
+function openDetail(id){
+  const l = leads.find(x=>x.id===id);
+  if(!l) return;
+  editId = id;
+
+  const noResp = l.resp==='Sin contactar' || !l.resp;
+  let body = '';
+  if(noResp) body += `<div class="no-resp-banner">📵 Este lead nunca fue contactado</div>`;
+  if(l.resp==='Contactado') body += `<div class="no-resp-banner" style="color:var(--amber);background:#fbbf2412;border-color:#fbbf2433">📞 Contactado — esperando respuesta</div>`;
+
+  body += `<div class="detail-grid" style="margin-bottom:14px">
+    <div class="detail-field"><div class="detail-label">Teléfono</div><div class="detail-val">${l.telefono?`<a href="tel:${l.telefono}">${l.telefono}</a>`:'—'}</div></div>
+    <div class="detail-field"><div class="detail-label">Email</div><div class="detail-val">${l.email?`<a href="mailto:${l.email}">${l.email}</a>`:'—'}</div></div>
+    <div class="detail-field"><div class="detail-label">Canal</div><div class="detail-val">${badge(l.canal||'—',CANAL_CLS[l.canal]||'b-gray')}</div></div>
+    <div class="detail-field"><div class="detail-label">Presupuesto</div><div class="detail-val">${badge(l.ppto||'—',PPTO_CLS[l.ppto]||'b-gray')}</div></div>
+    <div class="detail-field"><div class="detail-label">Tipo de evento</div><div class="detail-val">${l.tipo||'—'}</div></div>
+    <div class="detail-field"><div class="detail-label">Estado</div><div class="detail-val">${l.estado ? badge(l.estado, ESTADO_CLS[l.estado]||'b-gray') : '—'}</div></div>
+    <div class="detail-field"><div class="detail-label">Municipio</div><div class="detail-val">${l.municipio||'—'}</div></div>
+    <div class="detail-field" style="${l.ccaa?'border:1px solid var(--gold)':''}"><div class="detail-label">Comunidad Autónoma</div><div class="detail-val" style="color:var(--gold);font-weight:600">${l.ccaa||'—'}</div></div>
   </div>`;
 
-  document.getElementById('inv-ficha-body').innerHTML = body;
-  document.getElementById('inv-ficha-overlay').classList.add('open');
+  if((l.shows||[]).length){
+    body += `<div class="detail-section"><div class="detail-label">Espectáculos</div><div class="badges">${l.shows.map(s=>badge(showName(s),'b-gold')).join('')}</div></div>`;
+  }
+  if((l.fechas||[]).length){
+    body += `<div class="detail-section"><div class="detail-label">Fechas</div><div class="badges">${l.fechas.map(d=>badge('📅 '+fmtDate(d),'b-gray')).join('')}</div></div>`;
+  }
+  if(l.notas){
+    body += `<div class="detail-section"><div class="detail-label">Notas</div><div class="detail-notes">${l.notas}</div></div>`;
+  }
+  body += `<div style="font-size:.65rem;color:var(--muted2);margin-top:10px">Creado ${fmtDate(l.createdAt?.slice(0,10))}</div>`;
+  body += `<div class="form-actions" style="margin-top:16px">
+    <button class="btn-del" onclick="deleteLead()">🗑</button>
+    <button class="btn btn-gold" style="flex:1" onclick="openForm('${id}')">✏ Editar</button>
+  </div>`;
+
+  openPanel(l.nombre, body);
 }
 
-function closeInvFicha() { document.getElementById('inv-ficha-overlay').classList.remove('open'); fichaInvId = null; }
-function closeInvFichaOutside(e) { if (e.target === document.getElementById('inv-ficha-overlay')) closeInvFicha(); }
-function editFromInvFicha() { const id = fichaInvId; closeInvFicha(); setTimeout(() => openInvModal(id), 100); }
-
-// ─────────────────────────────────────────────
-// MODAL INVERSOR
-// ─────────────────────────────────────────────
-function renderPerfilSelector(selected) {
-  document.getElementById('inv-perfil-selector').innerHTML = PERFILES.map(p =>
-    `<div class="product-option ${selected===p.id?'selected':''}" onclick="selectPerfil('${p.id}',this)">
-      ${p.icon} ${p.label}
-    </div>`
-  ).join('');
-  selectedPerfil = selected || null;
-}
-
-function selectPerfil(id, el) {
-  selectedPerfil = id;
-  document.querySelectorAll('#inv-perfil-selector .product-option').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-function openInvModal(id = null) {
-  editInvId = id;
-  const inv = id ? inversores.find(i => i.id === id) : null;
-  document.getElementById('inv-modal-title').textContent = inv ? '✏️ Editar inversor' : '💼 Nuevo inversor';
-  document.getElementById('inv-nombre').value       = inv?.nombre       || '';
-  document.getElementById('inv-telefono').value     = inv?.telefono     || '';
-  document.getElementById('inv-email').value        = inv?.email        || '';
-  document.getElementById('inv-empresa').value      = inv?.empresa      || '';
-  document.getElementById('inv-origen').value       = inv?.origen       || 'Lead captado';
-  document.getElementById('inv-capital').value      = inv?.capital      || 'Hasta 300k';
-  document.getElementById('inv-prioridad').value    = inv?.prioridad    || 'Media';
-  document.getElementById('inv-estado').value       = inv?.estado       || 'Nuevo contacto';
-  document.getElementById('inv-agente').value       = inv?.agente       || 'Fernando';
-  document.getElementById('inv-zonas').value        = inv?.zonas        || '';
-  document.getElementById('inv-rentabilidad').value = inv?.rentabilidad || '';
-  document.getElementById('inv-plazo').value        = inv?.plazo        || 'Sin definir';
-  document.getElementById('inv-motivacion').value   = inv?.motivacion   || '';
-  document.getElementById('inv-objeciones').value   = inv?.objeciones   || '';
-  document.getElementById('inv-notas').value        = inv?.notas        || '';
-  document.getElementById('inv-btn-delete').style.display = inv ? 'inline-flex' : 'none';
-  renderPerfilSelector(inv?.perfil || null);
-  // Cargar tipos de activo y zonas seleccionadas
-  invTiposSelected = parseTipos(inv?.tipos_activo || '[]');
-  invZonasSelected = parseZonas(inv?.zonas_geo    || '[]');
-  renderMultiChecks();
-  document.getElementById('inv-modal-overlay').classList.add('open');
-}
-
-function closeInvModal() { document.getElementById('inv-modal-overlay').classList.remove('open'); editInvId = null; }
-function closeInvModalOutside(e) { if (e.target === document.getElementById('inv-modal-overlay')) closeInvModal(); }
-
-// Cargar inversores al iniciar
-const _origInitSetup = initSetup;
-
-// Auto-refresh incluye inversores
-setInterval(() => { if (scriptUrl) { loadLeads(); loadInversores(); } }, 60000);
-
-// ─────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
 // TOAST
-// ─────────────────────────────────────────────
-let toastTimer;
-function showToast(msg, type='') {
+// ══════════════════════════════════════════════════════
+let _tt;
+function toast(msg, type=''){
   const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+  t.textContent = msg; t.className = 'show '+(type||'');
+  clearTimeout(_tt); _tt = setTimeout(()=>t.className='', 3200);
 }
 
-// ─────────────────────────────────────────────
-// AUTO-REFRESH cada 60s
-// ─────────────────────────────────────────────
-setInterval(() => { if (scriptUrl) loadLeads(); }, 60000);
+// ══════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════
+function exportCSV(){
+  if(!leads.length){ toast('Sin leads para exportar','err'); return; }
+  const headers = ['Nombre','Teléfono','Email','Tipo evento','Canal','Respuesta','Estado',
+                   'Presupuesto','Comunidad Autónoma','Municipio',
+                   'Espectáculos','Fechas','Notas','Creado'];
+  const rows = leads.map(l=>[
+    l.nombre, l.telefono, l.email, l.tipo, l.canal,
+    l.resp||'Sin contactar', l.estado||'', l.ppto||'Sin enviar',
+    l.ccaa||'', l.municipio||'',
+    (l.shows||[]).map(id=>{ const s=getShows().find(x=>x.id===id); return s?s.name:id; }).join(' | '),
+    (l.fechas||[]).join(' | '),
+    (l.notas||'').replace(/\n/g,' '),
+    l.createdAt ? new Date(l.createdAt).toLocaleDateString('es-ES') : ''
+  ].map(v => `"${String(v||'').replace(/"/g,'""')}"`));
+  const csv = [headers.join(','), ...rows.map(r=>r.join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = `sdm_leads_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  toast('✅ CSV descargado','ok');
+}
 
-// ─────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
 // INIT
-// ─────────────────────────────────────────────
-initSetup();
-loadInversores();
+// ══════════════════════════════════════════════════════
+(function init(){
+  if(localStorage.getItem(LSU) !== null || localStorage.getItem(LS)){
+    // Already configured or has local data
+    startApp();
+  } else {
+    document.getElementById('setup').style.display = 'flex';
+  }
+})();
 </script>
 </body>
 </html>
